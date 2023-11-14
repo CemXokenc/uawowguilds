@@ -4,6 +4,7 @@ import aiohttp
 import asyncio
 from discord import app_commands
 from uaguildlist import url_list
+from config import token
 
 # Initialize intents and client
 intents = discord.Intents.default()
@@ -135,4 +136,4 @@ async def on_ready():
     print("Ready!")
 
 # Run the bot
-client.run('MTE3MTQyNDAxMTg5NzU0NDcwNA.GO3v_6.3qxLmSOh1zW5CUIQUHdkbNdgwCgt1foXrtclQ0')
+client.run(token)
