@@ -86,8 +86,8 @@ async def get_data_3(interaction):
 
 # Command to print player ranks in the current M+ season
 @tree.command(name="rank", description="Top ua players")
-@app_commands.describe(top="1-50", classes="all/death knight/mage/...", guilds="all/Нехай Щастить/...", role="all/dps/healer/tank")
-async def rank(interaction, top: int, classes: str, guilds: str, role: str):
+@app_commands.describe(top="1-50", classes="all/death knight/demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.", guilds="all/Нехай Щастить/... Several guilds can be entered through ','.", role="all/dps/healer/tank", rio="0-3500")
+async def rank(interaction, top: int, classes: str, guilds: str, role: str, rio: int):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
@@ -118,8 +118,13 @@ async def rank(interaction, top: int, classes: str, guilds: str, role: str):
             return
 
         # Check if top value is within the range of 1 to 50 inclusive
-        if not 1 <= top <= 50:
-            await interaction.response.send_message("Error: The value of top must be between 1 and 50 inclusive.")
+        if not 1 <= top <= 20:
+            await interaction.response.send_message("Error: The value of top must be between 1 and 20 inclusive.")
+            return
+            
+        # Check if rio value is within the range of 0 to 3000 inclusive
+        if not 0 <= rio <= 3500:
+            await interaction.response.send_message("Error: The value of rio must be between 0 and 3500 inclusive.")
             return
 
         # Filter by class
@@ -127,19 +132,23 @@ async def rank(interaction, top: int, classes: str, guilds: str, role: str):
             members_data = [member for member in members_data if member['class'].lower() == classes.lower()]
 
         # Filter by guilds
-        members_data = [member for member in members_data if any(guild.strip().lower() == member['guild'].lower() for guild in input_guilds)]
+        if guilds.lower() != "all":
+            members_data = [member for member in members_data if any(guild.strip().lower() == member['guild'].lower() for guild in input_guilds)]
 
         # Sort by RIO rating according to the role
-        if role != "all":
-            members_data = sorted(members_data, key=lambda x: x.get('rio_' + role.lower(), 0), reverse=True)
+        if role.lower() != "all":
+            members_data = sorted(members_data, key=lambda x: max(x.get('rio_' + role.lower(), 0), 0), reverse=True)
         else:
-            members_data = sorted(members_data, key=lambda x: x.get('rio_all', 0), reverse=True)
+            members_data = sorted(members_data, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
+
+        # Filter by rio
+        members_data = [member for member in members_data if max(member.get('rio_' + role.lower(), 0), 0) > rio]
 
         # Limit the number of displayed results
         members_data = members_data[:top]
 
         # Format header message
-        header_message = f"Top {top}. Classes - {classes}. Guilds - {guilds}. Role - {role}"
+        header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}"
 
         # Format and send the results
         result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
