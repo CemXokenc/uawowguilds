@@ -101,23 +101,23 @@ async def rank(interaction, top: int, classes: str, guilds: str, role: str):
         # Check for valid class
         valid_classes = {"all", "death knight", "demon hunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"}
         if classes.lower() not in valid_classes:
-            await interaction.response.send_message(f"Класу '{classes}' не існує.")
+            await interaction.response.send_message(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior. Several classes can be entered through ','")
             return
 
         # Check for valid guild
         if guilds.lower() != "all" and not any(member['guild'].lower() == guilds.lower() for member in members_data):
-            await interaction.response.send_message(f"Гільдії '{guilds}' не існує.")
+            await interaction.response.send_message(f"Guild '{guilds}' does not exist. Check the spelling. Several guilds can be entered through ','")
             return
 
         # Check for valid role
         valid_roles = {"all", "dps", "healer", "tank"}
         if role.lower() not in valid_roles:
-            await interaction.response.send_message(f"Ролі '{role}' не існує.")
+            await interaction.response.send_message(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name. Several roles can be entered through ','")
             return
 
         # Check if top value is within the range of 1 to 20 inclusive
         if not 1 <= top <= 20:
-            await interaction.response.send_message("Помилка: значення top повинно бути в межах від 1 до 20 включно.")
+            await interaction.response.send_message("Error: The value of top must be between 1 and 20 inclusive.")
             return
 
         # Filter by class
