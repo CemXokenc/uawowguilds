@@ -8,9 +8,9 @@ async def fetch_data(session, url):
     async with session.get(url) as response:
         return await response.json()
 
-async def process_player(session, realm, name, data_list):
+async def process_player(session, realm, name, data_dict):
     # Construct the URL for player data
-    url = f"http://raider.io/api/v1/characters/profile?region=eu&realm={realm}&name={name}&fields=mythic_plus_scores_by_season:current"
+    url = f"http://raider.io/api/v1/characters/profile?region=eu&realm={realm}&name={name}&fields=mythic_plus_scores_by_season:season-df-2"
     player_data = await fetch_data(session, url)
 
     if 'mythic_plus_scores_by_season' in player_data:
@@ -24,19 +24,20 @@ async def process_player(session, realm, name, data_list):
         spec_2 = scores.get('spec_2', 0)
         spec_3 = scores.get('spec_3', 0)
 
-        # Update the corresponding player record in data_list with RIO scores
-        for player in data_list:
-            if player['name'] == name and player['realm'] == realm:
-                player['rio_all'] = all_score
-                player['rio_dps'] = dps_score
-                player['rio_healer'] = healer_score
-                player['rio_tank'] = tank_score
-                player['spec_0'] = spec_0
-                player['spec_1'] = spec_1
-                player['spec_2'] = spec_2
-                player['spec_3'] = spec_3
+        # Update the corresponding player record in data_dict with RIO scores
+        player_key = (realm, name)
+        if player_key in data_dict:
+            player = data_dict[player_key]
+            player['rio_all'] = all_score
+            player['rio_dps'] = dps_score
+            player['rio_healer'] = healer_score
+            player['rio_tank'] = tank_score
+            player['spec_0'] = spec_0
+            player['spec_1'] = spec_1
+            player['spec_2'] = spec_2
+            player['spec_3'] = spec_3
 
-async def process_guild(session, url, data_list):
+async def process_guild(session, url, data_dict):
     guild_data = await fetch_data(session, url)
 
     if 'realm' in guild_data:
@@ -46,24 +47,27 @@ async def process_guild(session, url, data_list):
         for member in guild_data.get('members', []):
             name = member.get('character', {}).get('name')
             class_ = member.get('character', {}).get('class')
+            active_spec_name = member.get('character', {}).get('active_spec_name')
 
             if name and class_:
-                # Add guild member's data to data_list
-                data_list.append({'realm': realm, 'guild': guild, 'name': name, 'class': class_})
+                # Add guild member's data to data_dict
+                player_key = (realm, name)
+                data_dict[player_key] = {'realm': realm, 'guild': guild, 'name': name, 'class': class_, 'active_spec_name': active_spec_name}
 
 async def main():
-    data_list = []
+    data_dict = {}
     prefix = "http://raider.io/api/v1/guilds/profile?region=eu&"
     postfix = "&fields=members"
 
     async with aiohttp.ClientSession() as session:
         for url in url_list:
-            await process_guild(session, prefix + url + postfix, data_list)
+            await process_guild(session, prefix + url + postfix, data_dict)
             await asyncio.sleep(1)  # Introduce a 1-second delay between guild requests
 
         # Fetch RIO data for each player
-        for player in data_list:
-            await process_player(session, player['realm'], player['name'], data_list)
+        for player_key in data_dict.keys():
+            realm, name = player_key
+            await process_player(session, realm, name, data_dict)
 
     # Clear the file before writing
     with open('members.json', 'w', encoding='utf-8') as file:
@@ -71,7 +75,7 @@ async def main():
 
     # Write data to the JSON file
     with open('members.json', 'w', encoding='utf-8') as file:
-        json.dump(data_list, file, ensure_ascii=False, indent=2)
+        json.dump(list(data_dict.values()), file, ensure_ascii=False, indent=2)
 
 # Measure execution time
 start_time = time.time()

@@ -178,9 +178,9 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
 
         # Format and send the results
         if spec_number == 0:
-            result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
+            result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['active_spec_name']} {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
         else:
-            result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['spec_' + spec]}" for i, member in enumerate(members_data)])
+            result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['active_spec_name']} {member['class']} - RIO {role}: {member['spec_' + spec]}" for i, member in enumerate(members_data)])
         await interaction.response.send_message(header_message + "\n------------------------------------------------------------\n" + result_message)
         
     except Exception as e:

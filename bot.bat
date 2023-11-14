@@ -7,7 +7,7 @@ set "currentHour=%currentHour:~0,2%"
 REM Check if the current hour is between 9 and 10
 if %currentHour% geq 09 if %currentHour% lss 10 (
     echo Running the parser...
-    python "C:\Users\CemXokenc\Desktop\parser.py"
+    python "C:\Users\CemXokenc\Desktop\uawowguilds\parser.py"
 ) else (
     echo Skipping parser execution outside the specified time range.
 )
@@ -23,6 +23,6 @@ if "%ERRORLEVEL%"=="0" (
 )
 
 echo Running the bot...
-start "Administrator:  cmd.exe - my_script.bat" cmd /c python "C:\Users\CemXokenc\Desktop\bot.py"
+start "Administrator:  cmd.exe - my_script.bat" cmd /c python "C:\Users\CemXokenc\Desktop\uawowguilds\bot.py"
 
 echo Script execution completed.
