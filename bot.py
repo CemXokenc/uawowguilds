@@ -85,9 +85,10 @@ async def get_data(interaction, season: int = 2):
     guilds="all/Нехай Щастить/... several guilds can be entered through ','.", 
     classes="all/death knight/death knight:3/... ':3' means you want to specify the spec.", 
     role="all/dps/healer/tank", 
-    rio="0-3500"
+    rio="0-3500",
+    note="note"
 )
-async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3000):
+async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3000, note: str = ""):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
@@ -169,15 +170,18 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
         # Limit the number of displayed results
         members_data = members_data[:top]
 
-        # Format header message
-        header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}"
+        # Format header message        
+        if len(note) > 0:
+            header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}. Note : {note}"
+        else:
+            header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}"
 
         # Format and send the results
         if spec_number == 0:
             result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
         else:
             result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['spec_' + spec]}" for i, member in enumerate(members_data)])
-        await interaction.response.send_message(header_message + "\n" + result_message)
+        await interaction.response.send_message(header_message + "\n------------------------------------------------------------\n" + result_message)
         
     except Exception as e:
         print(f"An error occurred while processing the rank command: {e}")
