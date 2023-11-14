@@ -86,7 +86,7 @@ async def get_data_3(interaction):
 
 # Command to print player ranks in the current M+ season
 @tree.command(name="rank", description="Top ua players")
-@app_commands.describe(top="5/10/20", classes="all/death knight/mage/...", guilds="all/Нехай Щастить/...", role="all/dps/healer/tank")
+@app_commands.describe(top="1-50", classes="all/death knight/mage/...", guilds="all/Нехай Щастить/...", role="all/dps/healer/tank")
 async def rank(interaction, top: int, classes: str, guilds: str, role: str):
     try:
         # Read data from the JSON file
@@ -101,32 +101,33 @@ async def rank(interaction, top: int, classes: str, guilds: str, role: str):
         # Check for valid class
         valid_classes = {"all", "death knight", "demon hunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"}
         if classes.lower() not in valid_classes:
-            await interaction.response.send_message(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior. Several classes can be entered through ','")
+            await interaction.response.send_message(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.")
             return
 
         # Check for valid guild
-        if guilds.lower() != "all" and not any(member['guild'].lower() == guilds.lower() for member in members_data):
-            await interaction.response.send_message(f"Guild '{guilds}' does not exist. Check the spelling. Several guilds can be entered through ','")
-            return
+        if guilds.lower() != "all":
+            input_guilds = guilds.split(',')
+            if not any(any(member['guild'].lower() == guild.lower() for member in members_data) for guild in input_guilds):
+                await interaction.response.send_message(f"At least one of the entered guilds does not exist. Check the spelling. Several guilds can be entered through ','.")
+                return
 
         # Check for valid role
         valid_roles = {"all", "dps", "healer", "tank"}
         if role.lower() not in valid_roles:
-            await interaction.response.send_message(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name. Several roles can be entered through ','")
+            await interaction.response.send_message(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name.")
             return
 
-        # Check if top value is within the range of 1 to 20 inclusive
-        if not 1 <= top <= 20:
-            await interaction.response.send_message("Error: The value of top must be between 1 and 20 inclusive.")
+        # Check if top value is within the range of 1 to 50 inclusive
+        if not 1 <= top <= 50:
+            await interaction.response.send_message("Error: The value of top must be between 1 and 50 inclusive.")
             return
 
         # Filter by class
         if classes.lower() != "all":
             members_data = [member for member in members_data if member['class'].lower() == classes.lower()]
 
-        # Filter by guild
-        if guilds.lower() != "all":
-            members_data = [member for member in members_data if member['guild'].lower() == guilds.lower()]
+        # Filter by guilds
+        members_data = [member for member in members_data if any(guild.strip().lower() == member['guild'].lower() for guild in input_guilds)]
 
         # Sort by RIO rating according to the role
         if role != "all":
