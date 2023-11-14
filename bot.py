@@ -2,6 +2,7 @@ import json
 import discord
 import aiohttp
 import asyncio
+import re
 from discord import app_commands
 from uaguildlist import url_list
 from config import token
@@ -81,8 +82,8 @@ async def get_data(interaction, season: int = 2):
 @tree.command(name="rank", description="Guilds Mythic+ Rank")
 @app_commands.describe(
     top="1-50", 
-    classes="all/death knight/demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.", 
-    guilds="all/Нехай Щастить/... Several guilds can be entered through ','.", 
+    guilds="all/Нехай Щастить/... several guilds can be entered through ','.", 
+    classes="all/death knight/death knight:3/... ':3' means you want to specify the spec.", 
     role="all/dps/healer/tank", 
     rio="0-3500"
 )
@@ -97,18 +98,31 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
             return
 
-        # Check for valid class
-        valid_classes = {"all", "death knight", "demon hunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"}
-        if classes.lower() not in valid_classes:
-            await interaction.response.send_message(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.")
-            return
-
         # Check for valid guild
         if guilds.lower() != "all":
             input_guilds = guilds.split(',')
             if not any(any(member['guild'].lower() == guild.lower() for member in members_data) for guild in input_guilds):
                 await interaction.response.send_message(f"At least one of the entered guilds does not exist. Check the spelling. Several guilds can be entered through ','.")
                 return
+        
+        # Check for valid class
+        spec_number = 0
+        valid_classes = {"all", "death knight", "demon hunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"}
+        if ':' in classes.lower():
+            # Line separator with a colon
+            split_result = classes.split(':')            
+            # Checking parts after splitting
+            if len(split_result) == 2 and split_result[1].isdigit() and 1 <= int(split_result[1]) <= 4:
+                classes = split_result[0]
+                spec_number = int(split_result[1])                
+                role = "all" # So that there are no conflicts with incorrect input
+            else:
+                await interaction.response.send_message("Wrong class format. Use the valid format: death knight:3 or warrior:1.")
+                return
+        else:
+            if classes.lower() not in valid_classes:
+                await interaction.response.send_message(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.")
+                return        
 
         # Check for valid role
         valid_roles = {"all", "dps", "healer", "tank"}
@@ -126,22 +140,31 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             await interaction.response.send_message("Error: The value of rio must be between 0 and 3500 inclusive.")
             return
 
+        # Filter by guilds
+        if guilds.lower() != "all":
+            members_data = [member for member in members_data if any(guild.strip().lower() == member['guild'].lower() for guild in input_guilds)]
+            
         # Filter by class
         if classes.lower() != "all":
             members_data = [member for member in members_data if member['class'].lower() == classes.lower()]
 
-        # Filter by guilds
-        if guilds.lower() != "all":
-            members_data = [member for member in members_data if any(guild.strip().lower() == member['guild'].lower() for guild in input_guilds)]
+        # Check whether the specification is entered
+        if spec_number == 0:
+            # Sort by RIO rating according to the role
+            if role.lower() != "all":
+                members_data = sorted(members_data, key=lambda x: max(x.get('rio_' + role.lower(), 0), 0), reverse=True)
+            else:
+                members_data = sorted(members_data, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
 
-        # Sort by RIO rating according to the role
-        if role.lower() != "all":
-            members_data = sorted(members_data, key=lambda x: max(x.get('rio_' + role.lower(), 0), 0), reverse=True)
+            # Filter by rio
+            members_data = [member for member in members_data if max(member.get('rio_' + role.lower(), 0), 0) > rio]
         else:
-            members_data = sorted(members_data, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
+            spec = str(spec_number - 1)
+            # Sort by RIO rating according to the role
+            members_data = sorted(members_data, key=lambda x: max(x.get('spec_' + spec, 0), 0), reverse=True)
 
-        # Filter by rio
-        members_data = [member for member in members_data if max(member.get('rio_' + role.lower(), 0), 0) > rio]
+            # Filter by rio
+            members_data = [member for member in members_data if max(member.get('spec_' + spec, 0), 0) > rio]
 
         # Limit the number of displayed results
         members_data = members_data[:top]
@@ -150,7 +173,10 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
         header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}"
 
         # Format and send the results
-        result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
+        if spec_number == 0:
+            result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
+        else:
+            result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['class']} - RIO {role}: {member['spec_' + spec]}" for i, member in enumerate(members_data)])
         await interaction.response.send_message(header_message + "\n" + result_message)
         
     except Exception as e:
