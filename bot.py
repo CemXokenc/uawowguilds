@@ -69,25 +69,24 @@ async def print_guild_ranks(interaction, tier):
         print(f"An error occurred while printing guild ranks: {e}")
         await interaction.response.send_message("An error occurred while processing the request. Please try again later.")
 
-# Command to print guild ranks in Vault of the Incarnates
-@tree.command(name="guilds_rank_df_1", description="Vault of the Incarnates")
-async def get_data_1(interaction):
-    await print_guild_ranks(interaction, 1)
-
-# Command to print guild ranks in Aberrus, the Shadowed Crucible
-@tree.command(name="guilds_rank_df_2", description="Aberrus, the Shadowed Crucible")
-async def get_data_2(interaction):
-    await print_guild_ranks(interaction, 2)
-    
-# Command to print guild ranks in Amirdrassil, the Dream's Hope
-@tree.command(name="guilds_rank_df_3", description="Amirdrassil, the Dream's Hope")
-async def get_data_3(interaction):
-    await print_guild_ranks(interaction, 3)
+# Command to print guilds raid ranks in the current addon
+@tree.command(name="guilds", description="Guilds Raid Rank")
+@app_commands.describe(
+    season="1/2/3"
+)
+async def get_data(interaction, season: int = 2):
+    await print_guild_ranks(interaction, season)
 
 # Command to print player ranks in the current M+ season
-@tree.command(name="rank", description="Top ua players")
-@app_commands.describe(top="1-50", classes="all/death knight/demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.", guilds="all/Нехай Щастить/... Several guilds can be entered through ','.", role="all/dps/healer/tank", rio="0-3500")
-async def rank(interaction, top: int, classes: str, guilds: str, role: str, rio: int):
+@tree.command(name="rank", description="Guilds Mythic+ Rank")
+@app_commands.describe(
+    top="1-50", 
+    classes="all/death knight/demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.", 
+    guilds="all/Нехай Щастить/... Several guilds can be entered through ','.", 
+    role="all/dps/healer/tank", 
+    rio="0-3500"
+)
+async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3000):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
