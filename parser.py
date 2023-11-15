@@ -1,8 +1,17 @@
 import aiohttp
 import asyncio
 import json
-from uaguildlist import url_list
 import time
+
+# Function to read guild data from the file
+def read_guild_data(file_path='uaguildlist.txt'):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            return [line.strip() for line in lines]
+    except Exception as e:
+        print(f"An error occurred while reading guild data: {e}")
+        return []
 
 async def fetch_data(session, url):
     async with session.get(url) as response:
@@ -60,6 +69,7 @@ async def main():
     postfix = "&fields=members"
 
     async with aiohttp.ClientSession() as session:
+        url_list = read_guild_data()
         for url in url_list:
             await process_guild(session, prefix + url + postfix, data_dict)
             await asyncio.sleep(1)  # Introduce a 1-second delay between guild requests

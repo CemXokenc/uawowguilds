@@ -4,13 +4,22 @@ import aiohttp
 import asyncio
 import re
 from discord import app_commands
-from uaguildlist import url_list
 from config import token
 
 # Initialize intents and client
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
+
+# Function to read guild data from the file
+def read_guild_data(file_path='uaguildlist.txt'):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            return [line.strip() for line in lines]
+    except Exception as e:
+        print(f"An error occurred while reading guild data: {e}")
+        return []
 
 # Asynchronous function to fetch guild data
 async def fetch_guild_data(guild_url, tier):
@@ -52,6 +61,7 @@ async def fetch_guild_data(guild_url, tier):
 async def print_guild_ranks(interaction, tier):
     try:
         # Asynchronously get data for all guilds of the specified tier
+        url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
         # Exclude guilds with rank 0
         guilds = [guild for guild in guilds if guild and guild[3] != 0]
@@ -85,10 +95,9 @@ async def get_data(interaction, season: int = 2):
     guilds="all/Нехай Щастить/... several guilds can be entered through ','.", 
     classes="all/death knight/death knight:3/... ':3' means you want to specify the spec.", 
     role="all/dps/healer/tank", 
-    rio="0-3500",
-    note="note"
+    rio="0-3500"
 )
-async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3000, note: str = ""):
+async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3000):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
@@ -131,12 +140,12 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             await interaction.response.send_message(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name.")
             return
 
-        # Check if top value is within the range of 1 to 50 inclusive
+        # Check if top value is within the range of 1 to 20 inclusive
         if not 1 <= top <= 20:
             await interaction.response.send_message("Error: The value of top must be between 1 and 20 inclusive.")
             return
             
-        # Check if rio value is within the range of 0 to 3000 inclusive
+        # Check if rio value is within the range of 0 to 3500 inclusive
         if not 0 <= rio <= 3500:
             await interaction.response.send_message("Error: The value of rio must be between 0 and 3500 inclusive.")
             return
@@ -170,11 +179,8 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
         # Limit the number of displayed results
         members_data = members_data[:top]
 
-        # Format header message        
-        if len(note) > 0:
-            header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}. Note : {note}"
-        else:
-            header_message = f"Top {top}. Classes -> {classes}. Guilds -> {guilds}. Role -> {role}. Rio > {rio}"
+        # Format header message                
+        header_message = f"Top {top} | Classes -> {classes} | Guilds -> {guilds} | Role -> {role} | Rio > {rio}"
 
         # Format and send the results
         if spec_number == 0:
