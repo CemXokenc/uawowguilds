@@ -80,8 +80,8 @@ async def print_guild_ranks(interaction, tier):
         print(f"An error occurred while printing guild ranks: {e}")
         await interaction.response.send_message("An error occurred while processing the request. Please try again later.")
 
-# Asynchronous function to get top 3 players for each class based on rio_all
-async def get_top3(interaction):
+# Asynchronous function to get top 3 players for each class or guild based on rio_all
+async def get_top3(interaction, category="class"):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
@@ -92,27 +92,33 @@ async def get_top3(interaction):
             await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
             return
 
-        # Group members data by class
-        class_groups = {}
+        # Check if the category is valid
+        valid_categories = ["class", "guild"]
+        if category.lower() not in valid_categories:
+            await interaction.response.send_message("Invalid category. Use 'class' or 'guild'.")
+            return
+
+        # Group members data by class or guild
+        category_groups = {}
         for member in members_data:
-            class_name = member['class']
-            if class_name not in class_groups:
-                class_groups[class_name] = []
-            class_groups[class_name].append(member)
+            category_name = member['class'] if category.lower() == "class" else member['guild']
+            if category_name not in category_groups:
+                category_groups[category_name] = []
+            category_groups[category_name].append(member)
 
-        # Get top 3 players for each class based on rio_all
-        top3_per_class = {}
-        for class_name, class_members in class_groups.items():
-            sorted_members = sorted(class_members, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
-            top3_per_class[class_name] = sorted_members[:3]
-
+        # Get top 3 players for each class or guild based on rio_all
+        top3_per_category = {}
+        for category_name, category_members in category_groups.items():
+            sorted_members = sorted(category_members, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
+            top3_per_category[category_name] = sorted_members[:3]
+        
         # Format and send the result
         result_message = ""
-        for class_name, top3_members in top3_per_class.items():
-            result_message += f"\n{class_name}:\n"
+        for category_name, top3_members in top3_per_category.items():
+            result_message += f"\n{category_name}:\n"
             for i, member in enumerate(top3_members):
-                result_message += f"{i + 1}. {member['name']} ({member['guild']}) - RIO all: {member['rio_all']}\n"
-
+                result_message += f"{i + 1}. {member['name']} ({member['guild'] if category == 'class' else member['class']}) - RIO: {member['rio_all']}\n"
+                    
         await interaction.response.send_message(result_message)
 
     except Exception as e:
@@ -232,10 +238,13 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
         print(f"An error occurred while processing the rank command: {e}")
         await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
         
-# Command to print top 3 players for each class based on rio_all
-@tree.command(name="top3", description="Top 3 Players for Each Class based on RIO all")
-async def top3(interaction):
-    await get_top3(interaction)
+# Command to print top 3 players for each class or guild based on rio
+@tree.command(name="top3", description="Top 3 Players for Each Class or Guild based on RIO")
+@app_commands.describe(
+    category="class/guild"
+)
+async def top3(interaction, category: str = "class"):
+    await get_top3(interaction, category)
         
 # Command "About us"
 @tree.command(name="about_us", description="About us")
