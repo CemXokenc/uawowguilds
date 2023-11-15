@@ -80,6 +80,45 @@ async def print_guild_ranks(interaction, tier):
         print(f"An error occurred while printing guild ranks: {e}")
         await interaction.response.send_message("An error occurred while processing the request. Please try again later.")
 
+# Asynchronous function to get top 3 players for each class based on rio_all
+async def get_top3(interaction):
+    try:
+        # Read data from the JSON file
+        with open('members.json', 'r', encoding='utf-8') as file:
+            members_data = json.load(file)
+
+        # Checking the existence of data in the file
+        if not members_data:
+            await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
+            return
+
+        # Group members data by class
+        class_groups = {}
+        for member in members_data:
+            class_name = member['class']
+            if class_name not in class_groups:
+                class_groups[class_name] = []
+            class_groups[class_name].append(member)
+
+        # Get top 3 players for each class based on rio_all
+        top3_per_class = {}
+        for class_name, class_members in class_groups.items():
+            sorted_members = sorted(class_members, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
+            top3_per_class[class_name] = sorted_members[:3]
+
+        # Format and send the result
+        result_message = ""
+        for class_name, top3_members in top3_per_class.items():
+            result_message += f"\n{class_name}:\n"
+            for i, member in enumerate(top3_members):
+                result_message += f"{i + 1}. {member['name']} ({member['guild']}) - RIO all: {member['rio_all']}\n"
+
+        await interaction.response.send_message(result_message)
+
+    except Exception as e:
+        print(f"An error occurred while processing the /top3 command: {e}")
+        await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
+
 # Command to print guilds raid ranks in the current addon
 @tree.command(name="guilds", description="Guilds Raid Rank")
 @app_commands.describe(
@@ -192,7 +231,12 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
     except Exception as e:
         print(f"An error occurred while processing the rank command: {e}")
         await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
-  
+        
+# Command to print top 3 players for each class based on rio_all
+@tree.command(name="top3", description="Top 3 Players for Each Class based on RIO all")
+async def top3(interaction):
+    await get_top3(interaction)
+        
 # Command "About us"
 @tree.command(name="about_us", description="About us")
 async def about_us(interaction):    
