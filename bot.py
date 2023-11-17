@@ -130,7 +130,7 @@ async def get_top3(interaction, category="class"):
 @app_commands.describe(
     season="1/2/3"
 )
-async def get_data(interaction, season: int = 2):
+async def get_data(interaction, season: int = 3):
     await print_guild_ranks(interaction, season)
 
 # Command to print player ranks in the current M+ season
@@ -142,7 +142,7 @@ async def get_data(interaction, season: int = 2):
     role="all/dps/healer/tank", 
     rio="0-3500"
 )
-async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3000):
+async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 500):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
@@ -245,11 +245,111 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
 )
 async def top3(interaction, category: str = "class"):
     await get_top3(interaction, category)
+    
+# Command "Tournament"
+@tree.command(name="tournament", description="Get top 3 players in a guild for a tournament")
+@app_commands.describe(
+    guild="Guild name for the tournament"
+)
+async def tournament(interaction, guild: str = "Нехай Щастить"):
+    # Read data from the JSON file
+    with open('members.json', 'r', encoding='utf-8') as file:
+        members_data = json.load(file)
+
+    # Checking the existence of data in the file
+    if not members_data:
+        await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
+        return
+
+    # Filter by guild
+    guild_members = [member for member in members_data if member['guild'].lower() == guild.lower()]
+
+    if not guild_members:
+        await interaction.response.send_message(f"No data available for the guild '{guild}'.")
+        return
+    
+    # Define desired specs for melee and ranged DPS
+    melee_specs = ["frost", "unholy", "havoc", "feral", "survival", "windwalker", "retribution", "assassination", "outlaw", "sublety", "enhancement", "arms", "fury"]
+    ranged_specs = ["balance", "augmentation", "devastation", "beast mastery", "marksmanship", "arcane", "fire", "frost", "shadow", "elemental", "affliction", "demonology", "destruction"]
+
+    # Get top 3 players for the tank category
+    top3_tank = sorted(guild_members, key=lambda x: max(x.get('rio_tank', 0), 0), reverse=True)[:3]
+    
+    # Get top 3 players for the healer category
+    top3_healer = sorted(guild_members, key=lambda x: max(x.get('rio_healer', 0), 0), reverse=True)[:3]
+        
+    # Get top 3 players for the melee dps category
+    top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
+    
+    # Get top 3 players for the ranged dps category
+    top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
+
+    # Format and send the result
+    result_message = f"Top 3 Players in Guild '{guild}' for the Tournament:\n"
+    
+    # Add top 3 players for the tank category to the result
+    result_message += "\nTanks:\n"
+    for i, member in enumerate(top3_tank):
+        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_tank']}\n"
+        
+    # Add top 3 players for the healer category to the result
+    result_message += "\nHealers:\n"
+    for i, member in enumerate(top3_healer):
+        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_healer']}\n"
+            
+    # Add top 3 players for the melee dps category to the result
+    result_message += "\nMelee DPS:\n"
+    for i, member in enumerate(top3_mdd):
+        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
+        
+    # Add top 3 players for the ranged dps category to the result
+    result_message += "\nRanged DPS:\n"
+    for i, member in enumerate(top3_rdd):
+        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
+
+    await interaction.response.send_message(result_message)
         
 # Command "About us"
 @tree.command(name="about_us", description="About us")
 async def about_us(interaction):    
     await interaction.response.send_message("https://youtu.be/xvpVTd1gt5Q")
+    
+# Command "Help"
+@tree.command(name="help", description="Get information about available commands")
+async def help_command(interaction):
+    try:
+        help_message = (
+            "**Available Commands:**\n\n"
+            "`/guilds` - Get guild raid ranks in the current addon.\n"
+            "Parameters:\n"
+            "  - `season`: Season number (1, 2, or 3, default is 3).\n\n"
+            
+            "`/rank` - Get player ranks in the current M+ season.\n"
+            "Parameters:\n"
+            "  - `top`: Number of top players to display (1-50, default is 10).\n"
+            "  - `guilds`: Guilds to filter (all, guild names separated by ',').\n"
+            "  - `classes`: Player classes to filter (all or specific class).\n"
+            "  - `role`: Player role to filter (all, dps, healer, tank, or spec name).\n"
+            "  - `rio`: Minimum RIO score to display (0-3500, default is 500).\n\n"
+            
+            "`/top3` - Get top 3 players for each class or guild based on RIO.\n"
+            "Parameters:\n"
+            "  - `category`: Category to display (class or guild, default is class).\n\n"
+            
+            "`/tournament` - Get top 3 players in each category.\n"
+            "Parameters:\n"
+            "  - `guild`: Top 3 players of which guild will be searched.\n"
+            
+            "`/about_us` - Learn more about us.\n\n"
+            
+            "`/help` - Get information about available commands."
+        )
+        
+        await interaction.response.send_message(help_message)
+
+    except Exception as e:
+        print(f"An error occurred while processing the help command: {e}")
+        await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
 
 # Event handler for bot readiness
 @client.event

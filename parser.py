@@ -19,7 +19,7 @@ async def fetch_data(session, url):
 
 async def process_player(session, realm, name, data_dict):
     # Construct the URL for player data
-    url = f"http://raider.io/api/v1/characters/profile?region=eu&realm={realm}&name={name}&fields=mythic_plus_scores_by_season:season-df-2"
+    url = f"http://raider.io/api/v1/characters/profile?region=eu&realm={realm}&name={name}&fields=mythic_plus_scores_by_season:current"
     player_data = await fetch_data(session, url)
 
     if 'mythic_plus_scores_by_season' in player_data:
