@@ -15,11 +15,6 @@ def read_guild_data(file_path='uaguildlist.txt'):
 
 async def fetch_data(session, url):
     async with session.get(url) as response:
-        print("Status:", response.status)
-        print("Content-type:", response.headers['content-type'])
-
-        html = await response.text()
-        print("Body:", html[:15], "...")
         return await response.json()
 
 async def process_player(session, realm, name, data_dict):

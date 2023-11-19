@@ -279,10 +279,10 @@ async def tournament(interaction, guild: str = "Нехай Щастить"):
     top3_healer = sorted(guild_members, key=lambda x: max(x.get('rio_healer', 0), 0), reverse=True)[:3]
         
     # Get top 3 players for the melee dps category
-    top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
+    top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs and member['class'] != 'Mage'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
     
     # Get top 3 players for the ranged dps category
-    top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
+    top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
 
     # Format and send the result
     result_message = f"Top 3 Players in Guild '{guild}' for the Tournament:\n"
