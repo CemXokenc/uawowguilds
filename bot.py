@@ -64,7 +64,7 @@ async def print_guild_ranks(interaction, tier):
         url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
         # Exclude guilds with rank 0
-        guilds = [guild for guild in guilds if guild and guild[3] != 0]
+        guilds = [guild for guild in guilds if guild and guild[3] != 0 and 'M' in guild[2]]
 
         if not guilds:
             await interaction.response.send_message(f"At the moment, there are no guilds with mythic progression in the {tier} season.")
