@@ -2,9 +2,10 @@ import aiohttp
 import asyncio
 import json
 import time
+import ssl
 
 # Function to read guild data from the file
-def read_guild_data(file_path='uaguildlist.txt'):
+def read_guild_data(file_path=r'C:\Users\Administrator\Desktop\uaguildlist.txt'):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -45,6 +46,11 @@ async def process_player(session, realm, name, data_dict):
             player['spec_1'] = spec_1
             player['spec_2'] = spec_2
             player['spec_3'] = spec_3
+        else:
+            print(player_key)
+    
+    else:
+        print(player_data)
 
 async def process_guild(session, url, data_dict):
     guild_data = await fetch_data(session, url)
@@ -70,9 +76,16 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         url_list = read_guild_data()
+        request_count = 0  # Counter of the number of requests
+
         for url in url_list:
             await process_guild(session, prefix + url + postfix, data_dict)
-            await asyncio.sleep(1)  # Introduce a 1-second delay between guild requests
+            request_count += 1
+
+            # Pause after every thousandth request for 5 minutes
+            if request_count % 1000 == 0:
+                print(f"Pausing for 5 minutes after {request_count} requests...")
+                await asyncio.sleep(300)  # Pause for 5 minutes
 
         # Fetch RIO data for each player
         for player_key in data_dict.keys():
