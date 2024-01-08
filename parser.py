@@ -2,7 +2,7 @@ import aiohttp
 import asyncio
 import json
 import time
-import ssl
+from datetime import datetime
 
 # Function to read guild data from the file
 def read_guild_data(file_path=r'C:\Users\Administrator\Desktop\uaguildlist.txt'):
@@ -74,30 +74,30 @@ async def main():
     prefix = "http://raider.io/api/v1/guilds/profile?region=eu&"
     postfix = "&fields=members"
 
-    async with aiohttp.ClientSession() as session:
+    connector = aiohttp.TCPConnector(ssl=False)
+    async with aiohttp.ClientSession(connector=connector) as session:
         url_list = read_guild_data()
         request_count = 0  # Counter of the number of requests
 
         for url in url_list:
             await process_guild(session, prefix + url + postfix, data_dict)
-            request_count += 1
-
-            # Pause after every thousandth request for 5 minutes
-            if request_count % 1000 == 0:
-                print(f"Pausing for 5 minutes after {request_count} requests...")
-                await asyncio.sleep(300)  # Pause for 5 minutes
 
         # Fetch RIO data for each player
         for player_key in data_dict.keys():
             realm, name = player_key
             await process_player(session, realm, name, data_dict)
+            request_count += 1
+            
+            # Pause after every thousandth request
+            if request_count % 1000 == 0:                
+                await asyncio.sleep(10 * 60)  # Pause                
 
-    # Clear the file before writing
-    with open('members.json', 'w', encoding='utf-8') as file:
+    # Clear the file before writing    
+    with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
         file.write("[]")
 
     # Write data to the JSON file
-    with open('members.json', 'w', encoding='utf-8') as file:
+    with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
         json.dump(list(data_dict.values()), file, ensure_ascii=False, indent=2)
 
 # Measure execution time

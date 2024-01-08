@@ -15,6 +15,7 @@ realm=Silvermoon&name=MRIYA
 realm=Silvermoon&name=BAPTA%20KOTIB
 realm=Silvermoon&name=Synevyr
 realm=Silvermoon&name=Ukraine
+realm=Silvermoon&name=Героям%20слава
 realm=Kazzak&name=Borsch%20Battalion
 realm=Kazzak&name=Hwg
 realm=Ravencrest&name=Ababagalamaga

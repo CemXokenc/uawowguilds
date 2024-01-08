@@ -247,11 +247,12 @@ async def top3(interaction, category: str = "class"):
     await get_top3(interaction, category)
     
 # Command "Tournament"
-@tree.command(name="tournament", description="Get top 3 players in a guild for a tournament")
+@tree.command(name="tournament", description="Get top players in a guild for a tournament")
 @app_commands.describe(
-    guild="Guild name for the tournament"
+    guild="Guild name for the tournament",
+    top="Number of players to display (default: 3)"
 )
-async def tournament(interaction, guild: str = "Нехай Щастить"):
+async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 3):
     # Read data from the JSON file
     with open('members.json', 'r', encoding='utf-8') as file:
         members_data = json.load(file)
@@ -269,20 +270,20 @@ async def tournament(interaction, guild: str = "Нехай Щастить"):
         return
     
     # Define desired specs for melee and ranged DPS
-    melee_specs = ["frost", "unholy", "havoc", "feral", "survival", "windwalker", "retribution", "assassination", "outlaw", "sublety", "enhancement", "arms", "fury"]
+    melee_specs = ["frost", "unholy", "havoc", "feral", "survival", "windwalker", "retribution", "assassination", "outlaw", "subtlety", "enhancement", "arms", "fury"]
     ranged_specs = ["balance", "augmentation", "devastation", "beast mastery", "marksmanship", "arcane", "fire", "frost", "shadow", "elemental", "affliction", "demonology", "destruction"]
 
-    # Get top 3 players for the tank category
-    top3_tank = sorted(guild_members, key=lambda x: max(x.get('rio_tank', 0), 0), reverse=True)[:3]
+    # Get top players for the tank category
+    top3_tank = sorted(guild_members, key=lambda x: max(x.get('rio_tank', 0), 0), reverse=True)[:top]
     
-    # Get top 3 players for the healer category
-    top3_healer = sorted(guild_members, key=lambda x: max(x.get('rio_healer', 0), 0), reverse=True)[:3]
+    # Get top players for the healer category
+    top3_healer = sorted(guild_members, key=lambda x: max(x.get('rio_healer', 0), 0), reverse=True)[:top]
         
-    # Get top 3 players for the melee dps category
-    top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs and member['class'] != 'Mage'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
+    # Get top players for the melee dps category
+    top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs and member['class'] != 'Mage'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
     
-    # Get top 3 players for the ranged dps category
-    top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:3]
+    # Get top players for the ranged dps category
+    top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
 
     # Format and send the result
     result_message = f"Top 3 Players in Guild '{guild}' for the Tournament:\n"
@@ -336,9 +337,10 @@ async def help_command(interaction):
             "Parameters:\n"
             "  - `category`: Category to display (class or guild, default is class).\n\n"
             
-            "`/tournament` - Get top 3 players in each category.\n"
+            "`/tournament` - Get top players in each category.\n"
             "Parameters:\n"
-            "  - `guild`: Top 3 players of which guild will be searched.\n"
+            "  - `guild`: Top players of which guild will be searched.\n"
+            "  - `top`: Top X players.\n"
             
             "`/about_us` - Learn more about us.\n\n"
             
