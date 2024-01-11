@@ -82,22 +82,11 @@ async def print_guild_ranks(interaction, tier):
 
 # Asynchronous function to send long messages
 async def send_long_message(interaction, long_message):
-    # Maximum message length in Discord
-    max_message_length = 2000
+    # Split the message into parts using the specified delimiters
+    message_parts = re.split(r'\n\n', long_message)
 
-    # Create an empty list to store message parts
-    message_parts = []
-
-    # Split the message into parts as long as it exists
-    while long_message:
-        # Take the next part
-        part = long_message[:max_message_length]
-
-        # Save the remainder of the message for the next iteration
-        long_message = long_message[max_message_length:]
-
-        # Add the part to the list
-        message_parts.append(part)
+    # Remove empty parts
+    message_parts = [part.strip() for part in message_parts if part.strip()]
 
     # Send each part
     for i, part in enumerate(message_parts, start=1):
@@ -156,7 +145,6 @@ async def get_top(interaction, category="class", top=3):
     except Exception as e:
         print(f"An error occurred while processing the /top command: {e}")
         await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
-
 
 # Command to print guilds raid ranks in the current addon
 @tree.command(name="guilds", description="Guilds Raid Rank")
