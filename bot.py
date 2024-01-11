@@ -38,7 +38,7 @@ async def fetch_guild_data(guild_url, tier):
     # Asynchronous request to Raider.io API
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(prefix + guild_url + postfix) as response:
+            async with session.get(prefix + guild_url + postfix, ssl=False) as response:
                 json_data = await response.json()
 
                 # Check for required keys in API response
@@ -286,7 +286,7 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
     top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
 
     # Format and send the result
-    result_message = f"Top 3 Players in Guild '{guild}' for the Tournament:\n"
+    result_message = f"Top {top} Players in Guild '{guild}' for the Tournament:\n"
     
     # Add top 3 players for the tank category to the result
     result_message += "\nTanks:\n"
