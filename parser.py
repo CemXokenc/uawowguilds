@@ -4,8 +4,10 @@ import json
 import time
 from datetime import datetime
 
+PATH = r'C:\Users\Administrator\Desktop'
+
 # Function to read guild data from the file
-def read_guild_data(file_path=r'C:\Users\Administrator\Desktop\uaguildlist.txt'):
+def read_guild_data(file_path=PATH + '\uaguildlist.txt'):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -93,11 +95,11 @@ async def main():
                 await asyncio.sleep(10 * 60)  # Pause                
 
     # Clear the file before writing    
-    with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
+    with open(PATH + '\members.json', 'w', encoding='utf-8') as file:
         file.write("[]")
 
     # Write data to the JSON file
-    with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
+    with open(PATH + '\members.json', 'w', encoding='utf-8') as file:
         json.dump(list(data_dict.values()), file, ensure_ascii=False, indent=2)
 
 # Measure execution time

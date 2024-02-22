@@ -1,0 +1,4 @@
+install python
+install	notepad++
+
+pip install aiohttp discord.py app_commands
