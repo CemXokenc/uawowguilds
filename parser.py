@@ -4,10 +4,10 @@ import json
 import time
 from datetime import datetime
 
-PATH = r'C:\Users\Administrator\Desktop'
+error_urls = []
 
 # Function to read guild data from the file
-def read_guild_data(file_path=PATH + '\uaguildlist.txt'):
+def read_guild_data(file_path=r'C:\Users\Administrator\Desktop\uaguildlist.txt'):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -17,42 +17,48 @@ def read_guild_data(file_path=PATH + '\uaguildlist.txt'):
         return []
 
 async def fetch_data(session, url):
-    async with session.get(url) as response:
-        return await response.json()
-
+    try:
+        async with session.get(url) as response:
+            return await response.json()
+    except Exception as e:
+        print(f"Error fetching data from {url}: {e}")
+        error_urls.append(url)
+        return None
+        
 async def process_player(session, realm, name, data_dict):
     # Construct the URL for player data
     url = f"http://raider.io/api/v1/characters/profile?region=eu&realm={realm}&name={name}&fields=mythic_plus_scores_by_season:current"
     player_data = await fetch_data(session, url)
 
-    if 'mythic_plus_scores_by_season' in player_data:
-        scores = player_data['mythic_plus_scores_by_season'][0]['scores']
-        all_score = scores.get('all', 0)
-        dps_score = scores.get('dps', 0)
-        healer_score = scores.get('healer', 0)
-        tank_score = scores.get('tank', 0)
-        spec_0 = scores.get('spec_0', 0)
-        spec_1 = scores.get('spec_1', 0)
-        spec_2 = scores.get('spec_2', 0)
-        spec_3 = scores.get('spec_3', 0)
+    if player_data is not None:
+        if 'mythic_plus_scores_by_season' in player_data:
+            scores = player_data['mythic_plus_scores_by_season'][0]['scores']
+            all_score = scores.get('all', 0)
+            dps_score = scores.get('dps', 0)
+            healer_score = scores.get('healer', 0)
+            tank_score = scores.get('tank', 0)
+            spec_0 = scores.get('spec_0', 0)
+            spec_1 = scores.get('spec_1', 0)
+            spec_2 = scores.get('spec_2', 0)
+            spec_3 = scores.get('spec_3', 0)
 
-        # Update the corresponding player record in data_dict with RIO scores
-        player_key = (realm, name)
-        if player_key in data_dict:
-            player = data_dict[player_key]
-            player['rio_all'] = all_score
-            player['rio_dps'] = dps_score
-            player['rio_healer'] = healer_score
-            player['rio_tank'] = tank_score
-            player['spec_0'] = spec_0
-            player['spec_1'] = spec_1
-            player['spec_2'] = spec_2
-            player['spec_3'] = spec_3
+            # Update the corresponding player record in data_dict with RIO scores
+            player_key = (realm, name)
+            if player_key in data_dict:
+                player = data_dict[player_key]
+                player['rio_all'] = all_score
+                player['rio_dps'] = dps_score
+                player['rio_healer'] = healer_score
+                player['rio_tank'] = tank_score
+                player['spec_0'] = spec_0
+                player['spec_1'] = spec_1
+                player['spec_2'] = spec_2
+                player['spec_3'] = spec_3
+            else:
+                print(player_key)
+        
         else:
-            print(player_key)
-    
-    else:
-        print(player_data)
+            print(player_data)
 
 async def process_guild(session, url, data_dict):
     guild_data = await fetch_data(session, url)
@@ -92,14 +98,19 @@ async def main():
             
             # Pause after every thousandth request
             if request_count % 1000 == 0:                
-                await asyncio.sleep(10 * 60)  # Pause                
+                await asyncio.sleep(10 * 60)  # Pause
+        
+        # Retry failed URLs
+        for url in error_urls:
+            await process_guild(session, prefix + url + postfix, data_dict)
+            # You may want to add another pause here if needed                                
 
     # Clear the file before writing    
-    with open(PATH + '\members.json', 'w', encoding='utf-8') as file:
+    with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
         file.write("[]")
 
     # Write data to the JSON file
-    with open(PATH + '\members.json', 'w', encoding='utf-8') as file:
+    with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
         json.dump(list(data_dict.values()), file, ensure_ascii=False, indent=2)
 
 # Measure execution time
