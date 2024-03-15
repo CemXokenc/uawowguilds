@@ -7,7 +7,7 @@ from discord import app_commands
 from config import token
 
 # Initialize intents and client
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
@@ -385,6 +385,30 @@ async def on_ready():
     # Synchronize the command tree    
     await tree.sync()
     print("Ready!")
+    
+# Event handler for new messages
+@client.event
+async def on_message(message):
+    # Check myself
+    if message.author == client.user:
+        return
+    
+    # Get server name
+    author = message.author.nick if message.author.nick is not None else message.author.display_name
+    
+    # Config
+    required_role = discord.utils.get(message.guild.roles, name="Guest")    
+    required_channel = discord.utils.get(message.guild.channels, name="флудилка")
 
+    # Server name pattern
+    pattern = r"[|/(\[]"
+
+    # Check if the message contains trigger text
+    if "видайте мені роль члена гільдії" in message.content.lower() and message.channel == required_channel:        
+        # Check if the message author has a specific role and the message is sent in a specific channel
+        if required_role not in message.author.roles or not re.search(pattern, author):
+            # Reply to the original user's message            
+            await message.reply("https://cdn.discordapp.com/attachments/786720808788688918/1202356554523742289/image.png?ex=65e8d84d&is=65d6634d&hm=dee787e24cb77005a58568556547af37a24fe98bfcb11c1f6ecabc1bf72842ff&")
+            
 # Run the bot
 client.run(token)
