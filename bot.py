@@ -395,13 +395,14 @@ async def on_message(message):
     
     # Config    
     required_role = discord.utils.get(message.guild.roles, name="Guest")    
-    author = message.author.nick if message.author.nick is not None else message.author.display_name    
+    author = message.author.nick if isinstance(message.author, discord.Member) and message.author.nick else message.author.display_name    
     name_pattern = r"[|/(\[]"
     
     # Check if the message contains trigger text    
     if "видайте мені роль члена гільдії" in message.content.lower() and "флудилка" in message.channel.name:
         # Check if the message author has a specific role and the message is sent in a specific channel
         if required_role not in message.author.roles or not re.search(name_pattern, author):
+            await message.add_reaction(":no_entry:")
             await message.reply("https://cdn.discordapp.com/attachments/786720808788688918/1202356554523742289/image.png?ex=65e8d84d&is=65d6634d&hm=dee787e24cb77005a58568556547af37a24fe98bfcb11c1f6ecabc1bf72842ff&")
             
 # Run the bot

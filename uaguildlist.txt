@@ -22,6 +22,7 @@ realm=Silvermoon&name=Ukraine
 realm=Silvermoon&name=Героям%20слава
 realm=Silvermoon&name=Bcecbit
 realm=Silvermoon&name=Pray%20for%20Ukraine
+realm=Silvermoon&name=SNÁFU
 realm=Kazzak&name=Borsch%20Battalion
 realm=Kazzak&name=Hwg
 realm=Ravencrest&name=Ababagalamaga
