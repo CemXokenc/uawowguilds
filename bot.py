@@ -395,11 +395,16 @@ async def on_message(message):
 
     # Config    
     required_role = discord.utils.get(message.guild.roles, name="Guest")
+    skiped_role = discord.utils.get(message.guild.roles, name="guild member")
     author = message.author.nick if isinstance(message.author, discord.Member) and message.author.nick else message.author.display_name
     name_pattern = r"[|/(\[]"
 
     # Check if the message contains trigger text    
     if "видайте мені роль члена гільдії" in message.content.lower() and "флудилка" in message.channel.name:
+        # If the author has the skiped_role, skip the checks
+        if skiped_rolee in message.author.roles:
+            return
+    
         # Check if the message author has a specific role and the message is sent in a specific channel
         if required_role not in message.author.roles or not re.search(name_pattern, author):
             # Check if the bot has permission to add reactions
