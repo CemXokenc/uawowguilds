@@ -3,6 +3,7 @@ realm=Tarren%20Mill&name=Tauren%20Milfs
 realm=Tarren%20Mill&name=Nomads%20TM
 realm=Tarren%20Mill&name=The%20Toxic%20Avengers
 realm=Tarren%20Mill&name=Mayhem%20Soul
+realm=Tarren%20Mill&name=Millennial%20Union
 realm=Tarren%20Mill&name=Draenei%20Milfs
 realm=Howling%20Fjord&name=Нехай%20Щастить
 realm=Howling%20Fjord&name=Бавовна
@@ -19,13 +20,17 @@ realm=Silvermoon&name=MRIYA
 realm=Silvermoon&name=BAPTA%20KOTIB
 realm=Silvermoon&name=Synevyr
 realm=Silvermoon&name=Ukraine
-realm=Silvermoon&name=Героям%20слава
 realm=Silvermoon&name=Bcecbit
 realm=Silvermoon&name=Pray%20for%20Ukraine
 realm=Silvermoon&name=SNÁFU
 realm=Kazzak&name=Borsch%20Battalion
 realm=Kazzak&name=Hwg
+realm=Kazzak&name=UKRAINIAN%20GUILD
+realm=Ravencrest&name=Viysko%20NightElfiyske
 realm=Ravencrest&name=Ababagalamaga
 realm=Twisting%20Nether&name=Morok
+realm=Draenor&name=FavouriteWorstNightmare
 realm=Draenor&name=Ukrainian%20Cossacks
 realm=Gordunni&name=Героям%20слава
+realm=Gordunni&name=Гуляйполе
+realm=Eversong&name=Мы%20с%20Украины
