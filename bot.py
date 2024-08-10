@@ -396,25 +396,25 @@ async def on_message(message):
     # Config    
     required_role = discord.utils.get(message.guild.roles, name="Guest")
     skiped_role = discord.utils.get(message.guild.roles, name="guild member")
-    author = message.author.nick if isinstance(message.author, discord.Member) and message.author.nick else message.author.display_name
+    author = message.author.nick if isinstance(message.author, discord.Member) and message.author.nick else message.author.display_name    
     name_pattern = r"[|/(\[]"
-
+    
     # Check if the message contains trigger text    
     if "видайте мені роль члена гільдії" in message.content.lower() and "флудилка" in message.channel.name:
         # If the author has the skiped_role, skip the checks
-        if skiped_rolee in message.author.roles:
-            return
-    
-        # Check if the message author has a specific role and the message is sent in a specific channel
-        if required_role not in message.author.roles or not re.search(name_pattern, author):
-            # Check if the bot has permission to add reactions
-            if message.channel.permissions_for(message.guild.me).add_reactions:
-                await message.add_reaction("⛔")
-            else:
-                print("Bot does not have permission to add reactions in this channel.")
-
-            # Replying with a message
-            await message.reply("https://cdn.discordapp.com/attachments/786720808788688918/1202356554523742289/image.png?ex=65e8d84d&is=65d6634d&hm=dee787e24cb77005a58568556547af37a24fe98bfcb11c1f6ecabc1bf72842ff&")
+        if skiped_role in message.author.roles:
+            await message.reply("You already have a role")            
+        else:    
+            # Check if the message author has a specific role and the message is sent in a specific channel
+            if required_role not in message.author.roles or not re.search(name_pattern, author):
+                # Check if the bot has permission to add reactions
+                if message.channel.permissions_for(message.guild.me).add_reactions:
+                    await message.add_reaction("⛔")
+                else:
+                    print("Bot does not have permission to add reactions in this channel.")
+                    
+                # Replying with a message
+                await message.reply("https://cdn.discordapp.com/attachments/786720808788688918/1202356554523742289/image.png?ex=65e8d84d&is=65d6634d&hm=dee787e24cb77005a58568556547af37a24fe98bfcb11c1f6ecabc1bf72842ff&")
             
 # Run the bot
 client.run(token)
