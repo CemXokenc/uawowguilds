@@ -5,6 +5,7 @@ realm=Tarren%20Mill&name=The%20Toxic%20Avengers
 realm=Tarren%20Mill&name=Mayhem%20Soul
 realm=Tarren%20Mill&name=Millennial%20Union
 realm=Tarren%20Mill&name=Draenei%20Milfs
+realm=Tarren%20Mill&name=GBK
 realm=Howling%20Fjord&name=Нехай%20Щастить
 realm=Howling%20Fjord&name=Бавовна
 realm=Howling%20Fjord&name=Фортеця
@@ -28,6 +29,8 @@ realm=Kazzak&name=Hwg
 realm=Kazzak&name=UKRAINIAN%20GUILD
 realm=Ravencrest&name=Viysko%20NightElfiyske
 realm=Ravencrest&name=Ababagalamaga
+realm=Ravencrest&name=Tovarystvo%20Zolotyy%20Husak
+realm=Ravencrest&name=Unite%20for%20Ukraine
 realm=Twisting%20Nether&name=Morok
 realm=Draenor&name=FavouriteWorstNightmare
 realm=Draenor&name=Ukrainian%20Cossacks
