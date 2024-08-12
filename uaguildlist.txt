@@ -36,4 +36,7 @@ realm=Draenor&name=FavouriteWorstNightmare
 realm=Draenor&name=Ukrainian%20Cossacks
 realm=Gordunni&name=Героям%20слава
 realm=Gordunni&name=Гуляйполе
+realm=Gordunni&name=Квента
+realm=Gordunni&name=Эйситерия
+realm=Eversong&name=Харцизи
 realm=Eversong&name=Мы%20с%20Украины
