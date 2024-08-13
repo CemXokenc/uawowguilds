@@ -18,7 +18,7 @@ def get_data_array(sheet_url):
     Fetches data from a Google Sheets URL and converts it to a NumPy array.
     """
     df = pd.read_csv(sheet_url, header=None)  # Read the CSV data into a DataFrame
-    df = df.iloc[:, [0, 1]]  # Select the first two columns
+    df = df.iloc[:, [0, 1, 2]]  # Select the first three columns
     array = df.to_numpy()  # Convert DataFrame to NumPy array
     return array
 
@@ -54,7 +54,8 @@ async def process_player(session, realm, name, data_dict):
 
             player_key = (realm, name)
             player = data_dict[player_key]
-            # Update player data with scores
+
+            # Update player data with scores and guild information
             player.update({
                 'rio_all': all_score,
                 'rio_dps': dps_score,
@@ -63,7 +64,10 @@ async def process_player(session, realm, name, data_dict):
                 'spec_0': spec_0,
                 'spec_1': spec_1,
                 'spec_2': spec_2,
-                'spec_3': spec_3
+                'spec_3': spec_3,
+                'active_spec_name': player_data.get('active_spec_name', 'Unknown'),
+                'class': player_data.get('class', 'Unknown'),
+                'guild': player.get('guild', 'Unknown')  # Use guild from data_dict
             })
         else:
             print(f"Data for {name} does not contain mythic_plus_scores_by_season: {player_data}")
@@ -88,19 +92,23 @@ async def main():
         'spec_0': 0,
         'spec_1': 0,
         'spec_2': 0,
-        'spec_3': 0
+        'spec_3': 0,
+        'active_spec_name': 'Unknown',
+        'class': 'Unknown',
+        'guild': 'Unknown'
     })
     
     # Fill data_dict with initial data
-    for character_name, realm in data_array:
+    for character_name, realm, guild in data_array:
         data_dict[(realm, character_name)]['name'] = character_name
         data_dict[(realm, character_name)]['realm'] = realm
+        data_dict[(realm, character_name)]['guild'] = guild
     
     connector = aiohttp.TCPConnector(ssl=False)  # Disable SSL certificate verification
     async with aiohttp.ClientSession(connector=connector) as session:
         request_count = 0
 
-        for character_name, realm in data_array:
+        for character_name, realm, guild in data_array:
             await process_player(session, realm, character_name, data_dict)
             request_count += 1
             

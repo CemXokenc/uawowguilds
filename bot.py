@@ -272,25 +272,38 @@ async def top(interaction, category: str = "class", top: int = 3):
 @tree.command(name="tournament", description="Get top players in a guild for a tournament")
 @app_commands.describe(
     guild="Guild name for the tournament",
-    top="Number of players to display (default: 3)"
+    top="Number of players to display (default: 3)",
+    new="Use new data source (default: True)"
 )
-async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 3):
-    # Read data from the JSON file
-    with open('members.json', 'r', encoding='utf-8') as file:
+async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 3, new: bool = True):
+    # Determine the data source based on the 'new' parameter
+    if new:
+        data_file = 'tournament.json'
+        filter_guild = False
+    else:
+        data_file = 'members.json'
+        filter_guild = True
+
+    # Read data from the selected JSON file
+    with open(data_file, 'r', encoding='utf-8') as file:
         members_data = json.load(file)
 
     # Checking the existence of data in the file
     if not members_data:
-        await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
+        await interaction.response.send_message(f"No data to process in '{data_file}'.")
         return
 
-    # Filter by guild
-    guild_members = [member for member in members_data if member['guild'].lower() == guild.lower()]
+    if filter_guild:
+        # Filter by guild if needed
+        guild_members = [member for member in members_data if member['guild'].lower() == guild.lower()]
 
-    if not guild_members:
-        await interaction.response.send_message(f"No data available for the guild '{guild}'.")
-        return
-    
+        if not guild_members:
+            await interaction.response.send_message(f"No data available for the guild '{guild}'.")
+            return
+    else:
+        # Use all members from the file
+        guild_members = members_data
+
     # Define desired specs for melee and ranged DPS
     melee_specs = ["frost", "unholy", "havoc", "feral", "survival", "windwalker", "retribution", "assassination", "outlaw", "subtlety", "enhancement", "arms", "fury"]
     ranged_specs = ["balance", "augmentation", "devastation", "beast mastery", "marksmanship", "arcane", "fire", "frost", "shadow", "elemental", "affliction", "demonology", "destruction"]
@@ -308,7 +321,7 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
     top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
 
     # Format and send the result
-    result_message = f"Top {top} Players in Guild '{guild}' for the Tournament:\n"
+    result_message = f"Top {top} Players for the Tournament:\n"
     
     # Add top 3 players for the tank category to the result
     result_message += "\nTanks:\n"
