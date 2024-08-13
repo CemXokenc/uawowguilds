@@ -273,16 +273,19 @@ async def top(interaction, category: str = "class", top: int = 3):
 @app_commands.describe(
     guild="Guild name for the tournament",
     top="Number of players to display (default: 3)",
-    new="Use new data source (default: True)"
+    format="Data source format: new or old (default: new)"
 )
-async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 3, new: bool = True):
-    # Determine the data source based on the 'new' parameter
-    if new:
+async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 3, format: str = "new"):
+    # Determine the data source based on the 'format' parameter
+    if format == "new":
         data_file = 'tournament.json'
         filter_guild = False
-    else:
+    elif format == "old":
         data_file = 'members.json'
         filter_guild = True
+    else:
+        await interaction.response.send_message("Invalid format. Please use 'new' or 'old'.")
+        return
 
     # Read data from the selected JSON file
     with open(data_file, 'r', encoding='utf-8') as file:
@@ -326,22 +329,34 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
     # Add top 3 players for the tank category to the result
     result_message += "\nTanks:\n"
     for i, member in enumerate(top3_tank):
-        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_tank']}\n"
+        if format == "new":
+            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_tank']}\n"
+        else:
+            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_tank']}\n"
         
     # Add top 3 players for the healer category to the result
     result_message += "\nHealers:\n"
     for i, member in enumerate(top3_healer):
-        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_healer']}\n"
+        if format == "new":
+            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_healer']}\n"
+        else:
+            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_healer']}\n"
             
     # Add top 3 players for the melee dps category to the result
     result_message += "\nMelee DPS:\n"
     for i, member in enumerate(top3_mdd):
-        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
+        if format == "new":
+            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
+        else:
+            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
         
     # Add top 3 players for the ranged dps category to the result
     result_message += "\nRanged DPS:\n"
     for i, member in enumerate(top3_rdd):
-        result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
+        if format == "new":
+            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
+        else:
+            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
 
     await interaction.response.send_message(result_message)
         
