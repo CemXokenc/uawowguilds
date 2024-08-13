@@ -18,7 +18,7 @@ def get_data_array(sheet_url):
     Fetches data from a Google Sheets URL and converts it to a NumPy array.
     """
     df = pd.read_csv(sheet_url, header=None)  # Read the CSV data into a DataFrame
-    df = df.iloc[:, [0, 1, 2]]  # Select the first three columns
+    df = df.iloc[1:, 1:4]  # Skip the first row and select columns 1, 2, and 3
     array = df.to_numpy()  # Convert DataFrame to NumPy array
     return array
 
