@@ -1,4 +1,5 @@
 realm=Tarren%20Mill&name=Нехай%20Щастить
+realm=Tarren%20Mill&name=Wrong%20Tactics%20Folks
 realm=Tarren%20Mill&name=Tauren%20Milfs
 realm=Tarren%20Mill&name=Nomads%20TM
 realm=Tarren%20Mill&name=The%20Toxic%20Avengers
@@ -6,11 +7,13 @@ realm=Tarren%20Mill&name=Mayhem%20Soul
 realm=Tarren%20Mill&name=Millennial%20Union
 realm=Tarren%20Mill&name=Draenei%20Milfs
 realm=Tarren%20Mill&name=GBK
+realm=Tarren%20Mill&name=UA%20Cyborgs
 realm=Howling%20Fjord&name=Нехай%20Щастить
 realm=Howling%20Fjord&name=Бавовна
 realm=Howling%20Fjord&name=Фортеця
 realm=Howling%20Fjord&name=Чёрный%20заслон
 realm=Howling%20Fjord&name=Дякую%20за%20РТ
+realm=Howling%20Fjord&name=Багряна%20Вежа
 realm=Terokkar&name=Ukrainian%20Alliance
 realm=Terokkar&name=Arey
 realm=Terokkar&name=Knaipa%20Variativ
@@ -34,6 +37,7 @@ realm=Ravencrest&name=Unite%20for%20Ukraine
 realm=Twisting%20Nether&name=Morok
 realm=Draenor&name=FavouriteWorstNightmare
 realm=Draenor&name=Ukrainian%20Cossacks
+realm=Draenor&name=Precedent%20UA
 realm=Gordunni&name=Героям%20слава
 realm=Gordunni&name=Гуляйполе
 realm=Gordunni&name=Квента
