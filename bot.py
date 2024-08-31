@@ -29,9 +29,9 @@ async def fetch_guild_data(guild_url, tier):
     
     # Dictionary to map tier number to raid name
     switch_dict = {
-        1: "vault-of-the-incarnates",
-        2: "aberrus-the-shadowed-crucible",
-        3: "amirdrassil-the-dreams-hope"
+        1: "nerubar-palace",
+        2: "",
+        3: ""
     }
     raid = switch_dict.get(tier)
     
@@ -50,7 +50,7 @@ async def fetch_guild_data(guild_url, tier):
                 guild_progress = json_data['raid_progression'][raid]['summary']
 
                 # Set rank 1244 for the guild "Нехай Щастить" and tier 2
-                guild_rank = 1244 if guild_name == "Нехай Щастить" and tier == 2 else json_data['raid_rankings'][raid]['mythic']['world']
+                guild_rank = json_data['raid_rankings'][raid]['mythic']['world']
                 return [guild_name, guild_realm, guild_progress, guild_rank]
 
     except Exception as e:
@@ -64,7 +64,7 @@ async def print_guild_ranks(interaction, tier):
         url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
         # Exclude guilds with rank 0
-        guilds = [guild for guild in guilds if guild and guild[3] != 0 and 'M' in guild[2]]
+        guilds = [guild for guild in guilds if guild]# and guild[3] != 0 and 'M' in guild[2]]
 
         if not guilds:
             await interaction.response.send_message(f"At the moment, there are no guilds with mythic progression in the {tier} season.")
@@ -151,7 +151,7 @@ async def get_top(interaction, category="class", top=3):
 @app_commands.describe(
     season="1/2/3"
 )
-async def get_data(interaction, season: int = 3):
+async def get_data(interaction, season: int = 1):
     await print_guild_ranks(interaction, season)
 
 # Command to print player ranks in the current M+ season
