@@ -64,14 +64,32 @@ async def print_guild_ranks(interaction, tier):
         url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
         # Exclude guilds with rank 0
-        guilds = [guild for guild in guilds if guild]# and guild[3] != 0 and 'M' in guild[2]]
+        guilds = [guild for guild in guilds if guild]
 
         if not guilds:
             await interaction.response.send_message(f"At the moment, there are no guilds with mythic progression in the {tier} season.")
             return
 
-        # Sort guilds by rank
-        sorted_guilds = sorted(guilds, key=lambda x: (x[3] or float('inf'), x[0]))
+        # Check if all ranks are 0
+        all_zero_rank = all(guild[3] == 0 for guild in guilds)
+        
+        if all_zero_rank:
+            # Custom sorting rule for all rank 0
+            def custom_sort_key(guild):
+                # Extract the progression and difficulty from the third element
+                progression, difficulty = guild[2].split(" ")
+                # Determine difficulty order: H > N
+                difficulty_order = {'H': 0, 'N': 1}
+                # Extract the first digit from progression
+                progression_number = int(progression.split('/')[0])
+                # Use difficulty order and progression number as sorting key
+                return (difficulty_order.get(difficulty, 2), -progression_number)
+            
+            sorted_guilds = sorted(guilds, key=custom_sort_key)
+        else:
+            # Default sorting by rank
+            sorted_guilds = sorted(guilds, key=lambda x: (x[3] or float('inf'), x[0]))
+
         # Format and send the result
         formatted_guilds = [f"{i + 1}. {', '.join(map(str, guild[:-1]))}, {guild[-1]} rank" for i, guild in enumerate(sorted_guilds)]
         await interaction.response.send_message("\n".join(formatted_guilds))
