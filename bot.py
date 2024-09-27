@@ -58,44 +58,33 @@ async def fetch_guild_data(guild_url, tier):
         return None
        
 # Function to print guild ranks
-async def print_guild_ranks(interaction, tier):
+async def print_guild_ranks(interaction, tier, limit):
     try:
         # Asynchronously get data for all guilds of the specified tier
         url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
-        # Exclude guilds with invalid data
         guilds = [guild for guild in guilds if guild]
 
         if not guilds:
             await interaction.response.send_message(f"At the moment, there are no guilds with progression in the {tier} season.")
             return
 
-        # Check if all guilds have rank 0
-        all_rank_zero = all(guild[3] == 0 for guild in guilds)
+        # Universal sorting by difficulty and progression, then by rank
+        def custom_sort_key(guild):
+            progression, difficulty = guild[2].split(" ")
+            difficulty_order = {'M': 0, 'H': 1, 'N': 2}
+            progression_number = int(progression.split('/')[0])
+            return (difficulty_order.get(difficulty, 3), -progression_number, guild[3])
 
-        if all_rank_zero:
-            # Custom sorting for rank 0 guilds
-            def custom_sort_key(guild):
-                # Extract the progression and difficulty from the third element
-                progression, difficulty = guild[2].split(" ")
-                # Determine difficulty order: H > N
-                difficulty_order = {'H': 0, 'N': 1}
-                # Extract the first digit from progression
-                progression_number = int(progression.split('/')[0])
-                # Use difficulty order and progression number as sorting key
-                return (difficulty_order.get(difficulty, 2), -progression_number)
+        # Sort guilds using the universal rule
+        sorted_guilds = sorted(guilds, key=custom_sort_key)
 
-            # Sort guilds with rank 0 by custom rules
-            sorted_guilds = sorted(guilds, key=custom_sort_key)
+        if limit != 'all':
+            limit = int(limit)
+            sorted_guilds = sorted_guilds[:limit]
 
-        else:
-            # Filter out guilds with rank 0
-            sorted_guilds = sorted([guild for guild in guilds if guild[3] > 0], key=lambda x: (x[3], x[0]))
-
-        # Format the result
         formatted_guilds = [f"{i + 1}. {', '.join(map(str, guild[:-1]))}, {guild[-1]} rank" for i, guild in enumerate(sorted_guilds)]
-        
-        # Function to send messages in chunks of 2000 characters
+
         def chunk_message(message_list, limit=2000):
             chunks = []
             current_chunk = ""
@@ -108,14 +97,23 @@ async def print_guild_ranks(interaction, tier):
                 chunks.append(current_chunk)
             return chunks
 
-        # Split the formatted_guilds into chunks and send each chunk
+        # Split the formatted guilds into chunks of 2000 characters
         message_chunks = chunk_message(formatted_guilds)
-        for chunk in message_chunks:
-            await interaction.response.send_message(chunk)
+
+        # Send the first chunk as a response
+        if len(message_chunks) > 0:
+            await interaction.response.send_message(message_chunks[0])
+
+        # Send the rest of the chunks as followups
+        for chunk in message_chunks[1:]:
+            await interaction.followup.send(chunk)
 
     except Exception as e:
         print(f"An error occurred while printing guild ranks: {e}")
-        await interaction.response.send_message("An error occurred while processing the request. Please try again later.")
+        if interaction.response.is_done():
+            await interaction.followup.send("An error occurred while processing the request. Please try again later.")
+        else:
+            await interaction.response.send_message("An error occurred while processing the request. Please try again later.")
 
 # Asynchronous function to send long messages
 async def send_long_message(interaction, long_message):
@@ -186,10 +184,11 @@ async def get_top(interaction, category="class", top=3):
 # Command to print guilds raid ranks in the current addon
 @tree.command(name="guilds", description="Guilds Raid Rank")
 @app_commands.describe(
-    season="1/2/3"
+    season="1/2/3",
+    limit="Number of guilds to display (or 'all' for full list)"
 )
-async def get_data(interaction, season: int = 1):
-    await print_guild_ranks(interaction, season)
+async def get_data(interaction, season: int = 1, limit: str = '10'):
+    await print_guild_ranks(interaction, season, limit)
 
 # Command to print player ranks in the current M+ season
 @tree.command(name="rank", description="Guilds Mythic+ Rank")
