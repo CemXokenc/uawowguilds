@@ -56,25 +56,25 @@ async def fetch_guild_data(guild_url, tier):
     except Exception as e:
         print(f"An error occurred while fetching guild data: {e}")
         return None
-
+       
 # Function to print guild ranks
 async def print_guild_ranks(interaction, tier):
     try:
         # Asynchronously get data for all guilds of the specified tier
         url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
-        # Exclude guilds with rank 0
+        # Exclude guilds with invalid data
         guilds = [guild for guild in guilds if guild]
 
         if not guilds:
-            await interaction.response.send_message(f"At the moment, there are no guilds with mythic progression in the {tier} season.")
+            await interaction.response.send_message(f"At the moment, there are no guilds with progression in the {tier} season.")
             return
 
-        # Check if all ranks are 0
-        all_zero_rank = all(guild[3] == 0 for guild in guilds)
-        
-        if all_zero_rank:
-            # Custom sorting rule for all rank 0
+        # Check if all guilds have rank 0
+        all_rank_zero = all(guild[3] == 0 for guild in guilds)
+
+        if all_rank_zero:
+            # Custom sorting for rank 0 guilds
             def custom_sort_key(guild):
                 # Extract the progression and difficulty from the third element
                 progression, difficulty = guild[2].split(" ")
@@ -84,15 +84,34 @@ async def print_guild_ranks(interaction, tier):
                 progression_number = int(progression.split('/')[0])
                 # Use difficulty order and progression number as sorting key
                 return (difficulty_order.get(difficulty, 2), -progression_number)
-            
-            sorted_guilds = sorted(guilds, key=custom_sort_key)
-        else:
-            # Default sorting by rank
-            sorted_guilds = sorted(guilds, key=lambda x: (x[3] or float('inf'), x[0]))
 
-        # Format and send the result
+            # Sort guilds with rank 0 by custom rules
+            sorted_guilds = sorted(guilds, key=custom_sort_key)
+
+        else:
+            # Filter out guilds with rank 0
+            sorted_guilds = sorted([guild for guild in guilds if guild[3] > 0], key=lambda x: (x[3], x[0]))
+
+        # Format the result
         formatted_guilds = [f"{i + 1}. {', '.join(map(str, guild[:-1]))}, {guild[-1]} rank" for i, guild in enumerate(sorted_guilds)]
-        await interaction.response.send_message("\n".join(formatted_guilds))
+        
+        # Function to send messages in chunks of 2000 characters
+        def chunk_message(message_list, limit=2000):
+            chunks = []
+            current_chunk = ""
+            for line in message_list:
+                if len(current_chunk) + len(line) + 1 > limit:
+                    chunks.append(current_chunk)
+                    current_chunk = ""
+                current_chunk += line + "\n"
+            if current_chunk:
+                chunks.append(current_chunk)
+            return chunks
+
+        # Split the formatted_guilds into chunks and send each chunk
+        message_chunks = chunk_message(formatted_guilds)
+        for chunk in message_chunks:
+            await interaction.response.send_message(chunk)
 
     except Exception as e:
         print(f"An error occurred while printing guild ranks: {e}")
@@ -181,7 +200,7 @@ async def get_data(interaction, season: int = 1):
     role="all/dps/healer/tank", 
     rio="0-3500"
 )
-async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 3300):
+async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 2000):
     try:
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
@@ -290,10 +309,10 @@ async def top(interaction, category: str = "class", top: int = 3):
 @tree.command(name="tournament", description="Get top players in a guild for a tournament")
 @app_commands.describe(
     guild="Guild name for the tournament",
-    top="Number of players to display (default: 3)",
+    top="Number of players to display (default: 5)",
     format="Data source format: new or old (default: new)"
 )
-async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 3, format: str = "new"):
+async def tournament(interaction, guild: str = "Нехай Щастить", top: int = 5, format: str = "new"):
     # Determine the data source based on the 'format' parameter
     if format == "new":
         data_file = 'tournament.json'
