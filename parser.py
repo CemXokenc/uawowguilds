@@ -24,13 +24,19 @@ async def fetch_data(session, url):
         print(f"Error fetching data from {url}: {e}")
         error_urls.append(url)
         return None
-        
-async def process_player(session, realm, name, data_dict):
+
+async def process_player(session, realm, name, player):
     # Construct the URL for player data
     url = f"http://raider.io/api/v1/characters/profile?region=eu&realm={realm}&name={name}&fields=mythic_plus_scores_by_season:current"
     player_data = await fetch_data(session, url)
 
     if player_data is not None:
+        # If the status is 400 (request error), write the nickname and server to the file
+        if 'statusCode' in player_data and player_data['statusCode'] == 400:
+            with open("400.txt", "a", encoding="utf-8") as error_file:
+                error_file.write(f"Character not found: {name} from realm {realm}\n")
+            return
+
         if 'mythic_plus_scores_by_season' in player_data:
             scores = player_data['mythic_plus_scores_by_season'][0]['scores']
             all_score = scores.get('all', 0)
@@ -42,23 +48,17 @@ async def process_player(session, realm, name, data_dict):
             spec_2 = scores.get('spec_2', 0)
             spec_3 = scores.get('spec_3', 0)
 
-            # Update the corresponding player record in data_dict with RIO scores
-            player_key = (realm, name)
-            if player_key in data_dict:
-                player = data_dict[player_key]
-                player['rio_all'] = all_score
-                player['rio_dps'] = dps_score
-                player['rio_healer'] = healer_score
-                player['rio_tank'] = tank_score
-                player['spec_0'] = spec_0
-                player['spec_1'] = spec_1
-                player['spec_2'] = spec_2
-                player['spec_3'] = spec_3
-            else:
-                print(player_key)
-        
+            # Update the corresponding player record with RIO scores
+            player['rio_all'] = all_score
+            player['rio_dps'] = dps_score
+            player['rio_healer'] = healer_score
+            player['rio_tank'] = tank_score
+            player['spec_0'] = spec_0
+            player['spec_1'] = spec_1
+            player['spec_2'] = spec_2
+            player['spec_3'] = spec_3
         else:
-            print(player_data)
+            print(f"No M+ data for: {name} from realm {realm}")
 
 async def process_guild(session, url, data_dict):
     guild_data = await fetch_data(session, url)
@@ -73,11 +73,32 @@ async def process_guild(session, url, data_dict):
             active_spec_name = member.get('character', {}).get('active_spec_name')
 
             if name and class_:
-                # Add guild member's data to data_dict
-                player_key = (realm, name)
-                data_dict[player_key] = {'realm': realm, 'guild': guild, 'name': name, 'class': class_, 'active_spec_name': active_spec_name}
+                # We create a unique key: name and server as a key
+                player_key = f"{name}_{realm}"
+
+                # If the player already exists, we add it as a new entry to the list
+                if player_key in data_dict:
+                    data_dict[player_key].append({
+                        'realm': realm,
+                        'guild': guild,
+                        'name': name,
+                        'class': class_,
+                        'active_spec_name': active_spec_name
+                    })
+                else:
+                    data_dict[player_key] = [{
+                        'realm': realm,
+                        'guild': guild,
+                        'name': name,
+                        'class': class_,
+                        'active_spec_name': active_spec_name
+                    }]
 
 async def main():
+    # Clean the file before starting work
+    with open("400.txt", "w", encoding="utf-8") as error_file:
+        error_file.write("")
+
     data_dict = {}
     prefix = "http://raider.io/api/v1/guilds/profile?region=eu&"
     postfix = "&fields=members"
@@ -85,33 +106,33 @@ async def main():
     connector = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=connector) as session:
         url_list = read_guild_data()
-        request_count = 0  # Counter of the number of requests
+        request_count = 0  # Request counter
 
         for url in url_list:
             await process_guild(session, prefix + url + postfix, data_dict)
 
         # Fetch RIO data for each player
-        for player_key in data_dict.keys():
-            realm, name = player_key
-            await process_player(session, realm, name, data_dict)
-            request_count += 1
-            
-            # Pause after every thousandth request
-            if request_count % 1000 == 0:                
-                await asyncio.sleep(10 * 60)  # Pause
+        for player_list in data_dict.values():
+            for player in player_list:
+                realm, name = player['realm'], player['name']
+                await process_player(session, realm, name, player)
+                request_count += 1
+
+                # Delay after every 190 requests
+                if request_count % 190 == 0:
+                    await asyncio.sleep(2 * 60)
         
-        # Retry failed URLs
+        # Reprocess invalid URLs
         for url in error_urls:
             await process_guild(session, prefix + url + postfix, data_dict)
-            # You may want to add another pause here if needed                                
 
     # Clear the file before writing    
     with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
         file.write("[]")
 
-    # Write data to the JSON file
+    # Write the data to a JSON file
     with open(r'C:\Users\Administrator\Desktop\members.json', 'w', encoding='utf-8') as file:
-        json.dump(list(data_dict.values()), file, ensure_ascii=False, indent=2)
+        json.dump([player for sublist in data_dict.values() for player in sublist], file, ensure_ascii=False, indent=2)
 
 # Measure execution time
 start_time = time.time()
@@ -119,7 +140,7 @@ start_time = time.time()
 # Call the asynchronous function
 asyncio.run(main())
 
-# Display information about the execution time
+# We display information about the execution time
 end_time = time.time()
 execution_time = end_time - start_time
 print(f"Execution time: {execution_time} seconds")

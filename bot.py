@@ -60,13 +60,16 @@ async def fetch_guild_data(guild_url, tier):
 # Function to print guild ranks
 async def print_guild_ranks(interaction, tier, limit):
     try:
+        # Defer the response to indicate that bot is processing the request
+        await interaction.response.defer()
+
         # Asynchronously get data for all guilds of the specified tier
         url_list = read_guild_data()
         guilds = await asyncio.gather(*[fetch_guild_data(guild_url, tier) for guild_url in url_list])
         guilds = [guild for guild in guilds if guild]
 
         if not guilds:
-            await interaction.response.send_message(f"At the moment, there are no guilds with progression in the {tier} season.")
+            await interaction.followup.send(f"At the moment, there are no guilds with progression in the {tier} season.")
             return
 
         # Universal sorting by difficulty and progression, then by rank
@@ -100,9 +103,9 @@ async def print_guild_ranks(interaction, tier, limit):
         # Split the formatted guilds into chunks of 2000 characters
         message_chunks = chunk_message(formatted_guilds)
 
-        # Send the first chunk as a response
+        # Send the first chunk as a followup
         if len(message_chunks) > 0:
-            await interaction.response.send_message(message_chunks[0])
+            await interaction.followup.send(message_chunks[0])
 
         # Send the rest of the chunks as followups
         for chunk in message_chunks[1:]:
@@ -201,55 +204,56 @@ async def get_data(interaction, season: int = 1, limit: str = '10'):
 )
 async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "all", role: str = "all", rio: int = 2000):
     try:
+        # Defer the response to indicate processing
+        await interaction.response.defer()
+
         # Read data from the JSON file
         with open('members.json', 'r', encoding='utf-8') as file:
             members_data = json.load(file)
 
         # Checking the existence of data in the file
         if not members_data:
-            await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
+            await interaction.followup.send("No data to process. Complete the 'members.json' file before using this command.")
             return
 
         # Check for valid guild
         if guilds.lower() != "all":
             input_guilds = guilds.split(',')
             if not any(any(member['guild'].lower() == guild.lower() for member in members_data) for guild in input_guilds):
-                await interaction.response.send_message(f"At least one of the entered guilds does not exist. Check the spelling. Several guilds can be entered through ','.")
+                await interaction.followup.send(f"At least one of the entered guilds does not exist. Check the spelling. Several guilds can be entered through ','.")
                 return
         
         # Check for valid class
         spec_number = 0
         valid_classes = {"all", "death knight", "demon hunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior"}
         if ':' in classes.lower():
-            # Line separator with a colon
             split_result = classes.split(':')            
-            # Checking parts after splitting
             if len(split_result) == 2 and split_result[1].isdigit() and 1 <= int(split_result[1]) <= 4:
                 classes = split_result[0]
                 spec_number = int(split_result[1])                
-                role = "all" # So that there are no conflicts with incorrect input
+                role = "all"
             else:
-                await interaction.response.send_message("Wrong class format. Use the valid format: death knight:3 or warrior:1.")
+                await interaction.followup.send("Wrong class format. Use the valid format: death knight:3 or warrior:1.")
                 return
         else:
             if classes.lower() not in valid_classes:
-                await interaction.response.send_message(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.")
+                await interaction.followup.send(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.")
                 return        
 
         # Check for valid role
         valid_roles = {"all", "dps", "healer", "tank"}
         if role.lower() not in valid_roles:
-            await interaction.response.send_message(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name.")
+            await interaction.followup.send(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name.")
             return
 
         # Check if top value is within the range of 1 to 20 inclusive
         if not 1 <= top <= 20:
-            await interaction.response.send_message("Error: The value of top must be between 1 and 20 inclusive.")
+            await interaction.followup.send("Error: The value of top must be between 1 and 20 inclusive.")
             return
             
         # Check if rio value is within the range of 0 to 3500 inclusive
         if not 0 <= rio <= 3500:
-            await interaction.response.send_message("Error: The value of rio must be between 0 and 3500 inclusive.")
+            await interaction.followup.send("Error: The value of rio must be between 0 and 3500 inclusive.")
             return
 
         # Filter by guilds
@@ -289,11 +293,13 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['active_spec_name']} {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
         else:
             result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['active_spec_name']} {member['class']} - RIO {role}: {member['spec_' + spec]}" for i, member in enumerate(members_data)])
-        await interaction.response.send_message(header_message + "\n------------------------------------------------------------\n" + result_message)
+        
+        # Send the follow-up message after the processing is done
+        await interaction.followup.send(header_message + "\n------------------------------------------------------------\n" + result_message)
         
     except Exception as e:
         print(f"An error occurred while processing the rank command: {e}")
-        await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
+        await interaction.followup.send("An error occurred while processing the command. Please try again later.")
         
 # Command to print top players for each class or guild based on rio
 @tree.command(name="top", description="Top Players for Each Class or Guild based on RIO")

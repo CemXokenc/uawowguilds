@@ -44,3 +44,4 @@ realm=Gordunni&name=Квента
 realm=Gordunni&name=Эйситерия
 realm=Eversong&name=Харцизи
 realm=Eversong&name=Мы%20с%20Украины
+realm=Soulflayer&name=Поляна%20Квасова
