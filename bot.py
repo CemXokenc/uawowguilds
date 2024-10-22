@@ -56,6 +56,25 @@ async def fetch_guild_data(guild_url, tier):
     except Exception as e:
         print(f"An error occurred while fetching guild data: {e}")
         return None
+
+# Function to send long messages in chunks
+async def send_long_message(interaction, message, chunk_size=2000):
+    # Split the message into chunks of the specified size
+    message_chunks = []
+    current_chunk = ""
+
+    for line in message.splitlines():
+        if len(current_chunk) + len(line) + 1 > chunk_size:
+            message_chunks.append(current_chunk)
+            current_chunk = ""
+        current_chunk += line + "\n"
+    
+    if current_chunk:
+        message_chunks.append(current_chunk)
+
+    # Send each chunk
+    for chunk in message_chunks:
+        await interaction.followup.send(chunk)
        
 # Function to print guild ranks
 async def print_guild_ranks(interaction, tier, limit):
@@ -88,28 +107,8 @@ async def print_guild_ranks(interaction, tier, limit):
 
         formatted_guilds = [f"{i + 1}. {', '.join(map(str, guild[:-1]))}, {guild[-1]} rank" for i, guild in enumerate(sorted_guilds)]
 
-        def chunk_message(message_list, limit=2000):
-            chunks = []
-            current_chunk = ""
-            for line in message_list:
-                if len(current_chunk) + len(line) + 1 > limit:
-                    chunks.append(current_chunk)
-                    current_chunk = ""
-                current_chunk += line + "\n"
-            if current_chunk:
-                chunks.append(current_chunk)
-            return chunks
-
-        # Split the formatted guilds into chunks of 2000 characters
-        message_chunks = chunk_message(formatted_guilds)
-
-        # Send the first chunk as a followup
-        if len(message_chunks) > 0:
-            await interaction.followup.send(message_chunks[0])
-
-        # Send the rest of the chunks as followups
-        for chunk in message_chunks[1:]:
-            await interaction.followup.send(chunk)
+        # Send the formatted guilds using send_long_message
+        await send_long_message(interaction, "\n".join(formatted_guilds))
 
     except Exception as e:
         print(f"An error occurred while printing guild ranks: {e}")
@@ -117,72 +116,6 @@ async def print_guild_ranks(interaction, tier, limit):
             await interaction.followup.send("An error occurred while processing the request. Please try again later.")
         else:
             await interaction.response.send_message("An error occurred while processing the request. Please try again later.")
-
-# Asynchronous function to send long messages
-async def send_long_message(interaction, long_message):
-    # Split the message into parts using the specified delimiters
-    message_parts = re.split(r'\n\n', long_message)
-
-    # Remove empty parts
-    message_parts = [part.strip() for part in message_parts if part.strip()]
-
-    # Send each part
-    for i, part in enumerate(message_parts, start=1):
-        try:
-            # Use interaction.response for the first part and interaction.followup for the rest
-            if i == 1:
-                await interaction.response.send_message(part)
-            else:
-                await interaction.followup.send(part)
-        except discord.errors.InteractionResponded:
-            # If the response is already sent, catch the exception
-            pass
-
-# Asynchronous function to get top players for each class or guild based on rio_all
-async def get_top(interaction, category="class", top=3):
-    try:
-        # Read data from the JSON file
-        with open('members.json', 'r', encoding='utf-8') as file:
-            members_data = json.load(file)
-
-        # Checking the existence of data in the file
-        if not members_data:
-            await interaction.response.send_message("No data to process. Complete the 'members.json' file before using this command.")
-            return
-
-        # Check if the category is valid
-        valid_categories = ["class", "guild"]
-        if category.lower() not in valid_categories:
-            await interaction.response.send_message("Invalid category. Use 'class' or 'guild'.")
-            return
-
-        # Group members data by class or guild
-        category_groups = {}
-        for member in members_data:
-            category_name = member['class'] if category.lower() == "class" else member['guild']
-            if category_name not in category_groups:
-                category_groups[category_name] = []
-            category_groups[category_name].append(member)
-
-        # Get top players for each class or guild based on rio_all
-        top_per_category = {}
-        for category_name, category_members in category_groups.items():
-            sorted_members = sorted(category_members, key=lambda x: max(x.get('rio_all', 0), 0), reverse=True)
-            top_per_category[category_name] = sorted_members[:top]
-
-        # Format and send the result
-        result_message = ""
-        for category_name, top_members in top_per_category.items():
-            result_message += f"\n{category_name}:\n"
-            for i, member in enumerate(top_members):
-                result_message += f"{i + 1}. {member['name']} ({member['guild'] if category == 'class' else member['class']}) - RIO: {member['rio_all']}\n"
-
-        # Send the potentially long message
-        await send_long_message(interaction, result_message)
-
-    except Exception as e:
-        print(f"An error occurred while processing the /top command: {e}")
-        await interaction.response.send_message("An error occurred while processing the command. Please try again later.")
 
 # Command to print guilds raid ranks in the current addon
 @tree.command(name="guilds", description="Guilds Raid Rank")
@@ -196,7 +129,7 @@ async def get_data(interaction, season: int = 1, limit: str = '10'):
 # Command to print player ranks in the current M+ season
 @tree.command(name="rank", description="Guilds Mythic+ Rank")
 @app_commands.describe(
-    top="1-20",
+    top="1-50",
     guilds="all/Нехай Щастить/... several guilds can be entered through ','.", 
     classes="all/death knight/death knight:3/... ':3' means you want to specify the spec.", 
     role="all/dps/healer/tank", 
@@ -246,8 +179,8 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             await interaction.followup.send(f"Role '{role}' does not exist. Use the valid roles: all, dps, healer, tank or spec name.")
             return
 
-        # Check if top value is within the range of 1 to 20 inclusive
-        if not 1 <= top <= 20:
+        # Check if top value is within the range of 1 to 50 inclusive
+        if not 1 <= top <= 50:
             await interaction.followup.send("Error: The value of top must be between 1 and 20 inclusive.")
             return
             
@@ -293,24 +226,14 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['active_spec_name']} {member['class']} - RIO {role}: {member['rio_' + role.lower()]}" for i, member in enumerate(members_data)])
         else:
             result_message = "\n".join([f"{i + 1}. {member['name']} ({member['guild']}, {member['realm']}) - {member['active_spec_name']} {member['class']} - RIO {role}: {member['spec_' + spec]}" for i, member in enumerate(members_data)])
-        
+
         # Send the follow-up message after the processing is done
-        await interaction.followup.send(header_message + "\n------------------------------------------------------------\n" + result_message)
-        
+        await send_long_message(interaction, header_message + "\n------------------------------------------------------------\n" + result_message)
+
     except Exception as e:
         print(f"An error occurred while processing the rank command: {e}")
         await interaction.followup.send("An error occurred while processing the command. Please try again later.")
-        
-# Command to print top players for each class or guild based on rio
-@tree.command(name="top", description="Top Players for Each Class or Guild based on RIO")
-@app_commands.describe(
-    category="class/guild",
-    top="top X"
-)
-async def top(interaction, category: str = "class", top: int = 3):
-    await get_top(interaction, category, top)
-    
-# Command "Tournament"
+            
 @tree.command(name="tournament", description="Get top players in a guild for a tournament")
 @app_commands.describe(
     guild="Guild name for the tournament",
@@ -326,7 +249,7 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
         data_file = 'members.json'
         filter_guild = True
     else:
-        await interaction.response.send_message("Invalid format. Please use 'new' or 'old'.")
+        await interaction.response.send_message("Invalid format. Please use 'new' or 'old'.", ephemeral=True)
         return
 
     # Read data from the selected JSON file
@@ -335,7 +258,7 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
 
     # Checking the existence of data in the file
     if not members_data:
-        await interaction.response.send_message(f"No data to process in '{data_file}'.")
+        await interaction.response.send_message(f"No data to process in '{data_file}'.", ephemeral=True)
         return
 
     if filter_guild:
@@ -343,7 +266,7 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
         guild_members = [member for member in members_data if member['guild'].lower() == guild.lower()]
 
         if not guild_members:
-            await interaction.response.send_message(f"No data available for the guild '{guild}'.")
+            await interaction.response.send_message(f"No data available for the guild '{guild}'.", ephemeral=True)
             return
     else:
         # Use all members from the file
@@ -365,8 +288,8 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
     # Get top players for the ranged dps category
     top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
 
-    # Format and send the result
-    result_message = f"Top {top} Players for the Tournament:\n"
+    # Format the result message
+    result_message = ""
     
     # Add top 3 players for the tank category to the result
     result_message += "\nTanks:\n"
@@ -400,7 +323,14 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
         else:
             result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
 
-    await interaction.response.send_message(result_message)
+    # Send initial response to acknowledge the command
+    await interaction.response.send_message(f"Top {top} Players for the Tournament:\n")
+
+    # Split the result message into chunks and send each part
+    max_message_length = 2000
+    for i in range(0, len(result_message), max_message_length):
+        chunk = result_message[i:i + max_message_length]
+        await interaction.followup.send(chunk)
         
 # Command "About us"
 @tree.command(name="about_us", description="About us")
@@ -428,10 +358,6 @@ async def help_command(interaction):
             "       -role: Player role to filter (all, dps, healer, tank, or spec name).\n"
             "       -rio: Minimum RIO score to display (0-3500, default is 500).\n"
             
-            "\n/top - Get top X players for each class or guild based on RIO.\n"            
-            "       -category: Category to display (class or guild, default is class).\n"
-            "       -top: top X players.\n"
-            
             "\n/tournament - Get top players in each category.\n"            
             "       -guild: Top players of which guild will be searched.\n"
             "       -top: Top X players.\n"
@@ -441,6 +367,8 @@ async def help_command(interaction):
             "\n/rules - Rules.\n"
             
             "\n/help - Get information about available commands.\n"
+            
+            "\nSourse code - https://github.com/CemXokenc/uawowguilds.\n"
         )
         
         await interaction.response.send_message(help_message)
