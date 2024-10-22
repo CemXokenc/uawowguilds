@@ -276,61 +276,36 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
     melee_specs = ["frost", "unholy", "havoc", "feral", "survival", "windwalker", "retribution", "assassination", "outlaw", "subtlety", "enhancement", "arms", "fury"]
     ranged_specs = ["balance", "augmentation", "devastation", "beast mastery", "marksmanship", "arcane", "fire", "frost", "shadow", "elemental", "affliction", "demonology", "destruction"]
 
-    # Get top players for the tank category
+    # Get top players for each category
     top3_tank = sorted(guild_members, key=lambda x: max(x.get('rio_tank', 0), 0), reverse=True)[:top]
-    
-    # Get top players for the healer category
     top3_healer = sorted(guild_members, key=lambda x: max(x.get('rio_healer', 0), 0), reverse=True)[:top]
-        
-    # Get top players for the melee dps category
     top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs and member['class'] != 'Mage'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
-    
-    # Get top players for the ranged dps category
     top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
 
-    # Format the result message
-    result_message = ""
-    
-    # Add top 3 players for the tank category to the result
-    result_message += "\nTanks:\n"
-    for i, member in enumerate(top3_tank):
-        if format == "new":
-            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_tank']}\n"
-        else:
-            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_tank']}\n"
-        
-    # Add top 3 players for the healer category to the result
-    result_message += "\nHealers:\n"
-    for i, member in enumerate(top3_healer):
-        if format == "new":
-            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_healer']}\n"
-        else:
-            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_healer']}\n"
-            
-    # Add top 3 players for the melee dps category to the result
-    result_message += "\nMelee DPS:\n"
-    for i, member in enumerate(top3_mdd):
-        if format == "new":
-            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
-        else:
-            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
-        
-    # Add top 3 players for the ranged dps category to the result
-    result_message += "\nRanged DPS:\n"
-    for i, member in enumerate(top3_rdd):
-        if format == "new":
-            result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
-        else:
-            result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member['rio_dps']}\n"
-
     # Send initial response to acknowledge the command
-    await interaction.response.send_message(f"Top {top} Players for the Tournament:\n")
+    await interaction.response.send_message(f"Top {top} Players for the Tournament:")
 
-    # Split the result message into chunks and send each part
-    max_message_length = 2000
-    for i in range(0, len(result_message), max_message_length):
-        chunk = result_message[i:i + max_message_length]
-        await interaction.followup.send(chunk)
+    # Create and send messages for each category separately
+    categories = [
+        ("Tanks", top3_tank, "rio_tank"),
+        ("Healers", top3_healer, "rio_healer"),
+        ("Melee DPS", top3_mdd, "rio_dps"),
+        ("Ranged DPS", top3_rdd, "rio_dps"),
+    ]
+
+    for category_name, top_players, rating_key in categories:
+        result_message = f"\n{category_name}:\n"
+        for i, member in enumerate(top_players):
+            if format == "new":
+                result_message += f"{i + 1}. {member['name']} ({member['guild']}) - {member['active_spec_name']} {member['class']} - {member.get(rating_key, 'N/A')}\n"
+            else:
+                result_message += f"{i + 1}. {member['name']} - {member['active_spec_name']} {member['class']} - {member.get(rating_key, 'N/A')}\n"
+
+        # Split the result message into chunks and send each part
+        max_message_length = 2000
+        for i in range(0, len(result_message), max_message_length):
+            chunk = result_message[i:i + max_message_length]
+            await interaction.followup.send(chunk)
         
 # Command "About us"
 @tree.command(name="about_us", description="About us")
