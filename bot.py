@@ -47,10 +47,12 @@ async def fetch_guild_data(guild_url, tier):
 
                 guild_name = json_data['name']
                 guild_realm = json_data['realm']
-                guild_progress = json_data['raid_progression'][raid]['summary']
-
-                # Set rank 1244 for the guild "Нехай Щастить" and tier 2
-                guild_rank = json_data['raid_rankings'][raid]['mythic']['world']
+                
+                # Set rank 1244 for the guild "Нехай Щастить" and tier 1
+                guild_progress = "5/8 M" if guild_name == "Нехай Щастить" and guild_realm == "Tarren Mill" and tier == 1 else json_data['raid_progression'][raid]['summary']
+                # guild_progress = json_data['raid_progression'][raid]['summary']
+                guild_rank = 630 if guild_name == "Нехай Щастить" and guild_realm == "Tarren Mill" and tier == 1 else json_data['raid_rankings'][raid]['mythic']['world']
+                # guild_rank = json_data['raid_rankings'][raid]['mythic']['world']
                 return [guild_name, guild_realm, guild_progress, guild_rank]
 
     except Exception as e:
@@ -277,8 +279,16 @@ async def tournament(interaction, guild: str = "Нехай Щастить", top:
     ranged_specs = ["balance", "augmentation", "devastation", "beast mastery", "marksmanship", "arcane", "fire", "frost", "shadow", "elemental", "affliction", "demonology", "destruction"]
 
     # Get top players for each category
-    top3_tank = sorted(guild_members, key=lambda x: max(x.get('rio_tank', 0), 0), reverse=True)[:top]
-    top3_healer = sorted(guild_members, key=lambda x: max(x.get('rio_healer', 0), 0), reverse=True)[:top]
+    top3_tank = sorted(
+        [member for member in guild_members if member.get('rio_tank', 0) >= 1000],
+        key=lambda x: max(x.get('rio_tank', 0), 0),
+        reverse=True
+    )[:top]
+    top3_healer = sorted(
+        [member for member in guild_members if member.get('rio_healer', 0) >= 1000],
+        key=lambda x: max(x.get('rio_healer', 0), 0),
+        reverse=True
+    )[:top]
     top3_mdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in melee_specs and member['class'] != 'Mage'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
     top3_rdd = sorted([member for member in guild_members if member.get('active_spec_name') and member['active_spec_name'].lower() in ranged_specs and member['class'] != 'Death Knight'], key=lambda x: max(x.get('rio_dps', 0), 0), reverse=True)[:top]
 
