@@ -23,11 +23,9 @@ def read_guild_data(file_path='uaguildlist.txt'):
 
 # Asynchronous function to fetch guild data
 async def fetch_guild_data(guild_url, tier):
-    # Set the prefix and suffix for forming the API request URL
     prefix = "http://raider.io/api/v1/guilds/profile?region=eu&"
     postfix = "&fields=raid_rankings,raid_progression"
     
-    # Dictionary to map tier number to raid name
     switch_dict = {
         1: "nerubar-palace",
         2: "",
@@ -35,28 +33,77 @@ async def fetch_guild_data(guild_url, tier):
     }
     raid = switch_dict.get(tier)
     
-    # Asynchronous request to Raider.io API
+    current_bosses_names = {
+        1: "ulgrax-the-devourer",
+        2: "the-bloodbound-horror",
+        3: "sikran",
+        4: "rashanan",
+        5: "broodtwister-ovinax",
+        6: "nexus-princess-kyveza",
+        7: "the-silken-court",
+        8: "queen-ansurek"
+    }
+    
+    boss_kill_url_suffix = {
+        "M": "&difficulty=mythic&region=eu&",
+        "H": "&difficulty=heroic&region=eu&",
+        "N": "&difficulty=normal&region=eu&",
+    }
+
     try:
         async with aiohttp.ClientSession() as session:            
             async with session.get(prefix + guild_url + postfix, ssl=False) as response:
                 json_data = await response.json()
 
-                # Check for required keys in API response
-                if 'name' not in json_data or 'realm' not in json_data or 'raid_progression' not in json_data or 'raid_rankings' not in json_data:
-                    raise ValueError("Invalid API response format")
+                if not all(key in json_data for key in ['name', 'realm', 'raid_progression', 'raid_rankings']):
+                    print(f"Invalid API response format for {guild_url}: {json_data}")
+                    return None
 
                 guild_name = json_data['name']
                 guild_realm = json_data['realm']
+                guild_progress = json_data['raid_progression'][raid].get('summary', '0/0 N')
+                guild_rank = json_data['raid_rankings'][raid]['mythic'].get('world', None)
                 
-                # Set rank 1244 for the guild "Нехай Щастить" and tier 1
-                guild_progress = "5/8 M" if guild_name == "Нехай Щастить" and guild_realm == "Tarren Mill" and tier == 1 else json_data['raid_progression'][raid]['summary']
-                # guild_progress = json_data['raid_progression'][raid]['summary']
-                guild_rank = 630 if guild_name == "Нехай Щастить" and guild_realm == "Tarren Mill" and tier == 1 else json_data['raid_rankings'][raid]['mythic']['world']
-                # guild_rank = json_data['raid_rankings'][raid]['mythic']['world']
-                return [guild_name, guild_realm, guild_progress, guild_rank]
+                best_percent = 100.0
+                pull_count = 0
+                
+                try:
+                    current_progress = int(guild_progress.split("/")[0])
+                    if current_progress < 8:
+                        next_boss = current_bosses_names.get(current_progress + 1)
+                        if not next_boss:
+                            raise ValueError("Invalid boss number")
+                         
+                        realm, guild = guild_url.split("&")
+                        formatted_realm = realm.replace("%20", "-").replace("realm=", "")
+                        formatted_guild = guild.replace("name=", "guild=")
+                        
+                        difficulty = guild_progress[-1]
+                        boss_kill_url = (
+                            f"https://raider.io/api/guilds/boss-kills?raid={raid}"
+                            f"{boss_kill_url_suffix.get(difficulty, '')}realm={formatted_realm}&{formatted_guild}&boss={next_boss}"
+                        )
+                        
+                        async with session.get(boss_kill_url, ssl=False) as boss_response:
+                            if boss_response.status != 422:                                  
+                                boss_data = await boss_response.json()
+                                kill_details = boss_data.get('killDetails', {}).get('attempt', {})
+                                best_percent = kill_details.get('bestPercent', 100.0)
+                                pull_count = kill_details.get('pullCount', 0)                            
+                except Exception as e:
+                    print(f"Error processing guild progress for {guild_name}: {e}")
+                
+                return {
+                    "name": guild_name,
+                    "realm": guild_realm,
+                    "progress": guild_progress,
+                    "rank": guild_rank,
+                    "best_percent": best_percent,
+                    "pull_count": pull_count
+                }
 
     except Exception as e:
-        print(f"An error occurred while fetching guild data: {e}")
+        print(f"An error occurred while fetching guild data for {guild_url}: {e}")
         return None
 
 # Function to send long messages in chunks
@@ -81,7 +128,7 @@ async def send_long_message(interaction, message, chunk_size=2000):
 # Function to print guild ranks
 async def print_guild_ranks(interaction, tier, limit):
     try:
-        # Defer the response to indicate that bot is processing the request
+        # Defer the response to indicate that the bot is processing the request
         await interaction.response.defer()
 
         # Asynchronously get data for all guilds of the specified tier
@@ -95,10 +142,10 @@ async def print_guild_ranks(interaction, tier, limit):
 
         # Universal sorting by difficulty and progression, then by rank
         def custom_sort_key(guild):
-            progression, difficulty = guild[2].split(" ")
+            progression, difficulty = guild["progress"].split(" ")
             difficulty_order = {'M': 0, 'H': 1, 'N': 2}
             progression_number = int(progression.split('/')[0])
-            return (difficulty_order.get(difficulty, 3), -progression_number, guild[3])
+            return (difficulty_order.get(difficulty, 3), -progression_number, guild["rank"])
 
         # Sort guilds using the universal rule
         sorted_guilds = sorted(guilds, key=custom_sort_key)
@@ -107,7 +154,20 @@ async def print_guild_ranks(interaction, tier, limit):
             limit = int(limit)
             sorted_guilds = sorted_guilds[:limit]
 
-        formatted_guilds = [f"{i + 1}. {', '.join(map(str, guild[:-1]))}, {guild[-1]} rank" for i, guild in enumerate(sorted_guilds)]
+        # Format guild data for output
+        formatted_guilds = []
+        for i, guild in enumerate(sorted_guilds):
+            # Format basic fields
+            guild_info = [f"{i + 1}. {guild['name']}, {guild['realm']}, {guild['progress']}, {guild['rank']} rank"]
+
+            # Append best_percent and pull_count only if the conditions are met
+            if not (guild["best_percent"] == 100):
+                guild_info.append(f"{guild['best_percent']}% best")
+            if not (guild["pull_count"] == 0 or guild["pull_count"] == None):
+                guild_info.append(f"{guild['pull_count']} pulls")
+
+            # Join all parts into a single line
+            formatted_guilds.append(", ".join(guild_info))
 
         # Send the formatted guilds using send_long_message
         await send_long_message(interaction, "\n".join(formatted_guilds))
@@ -374,6 +434,9 @@ async def on_ready():
 async def on_message(message):
     # Check myself
     if message.author == client.user:
+        return
+        
+    if message.guild is None:
         return
 
     # Config    
