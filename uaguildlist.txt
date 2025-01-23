@@ -31,6 +31,7 @@ realm=Silvermoon&name=Pray%20for%20Ukraine
 realm=Silvermoon&name=SNÁFU
 realm=Silvermoon&name=BBC%20team
 realm=Silvermoon&name=iSHO
+realm=Silvermoon&name=Dark%20Green
 realm=Kazzak&name=Borsch%20Battalion
 realm=Kazzak&name=Hwg
 realm=Kazzak&name=UKRAINIAN%20GUILD
