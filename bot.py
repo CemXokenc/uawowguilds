@@ -28,7 +28,7 @@ async def fetch_guild_data(guild_url, tier):
     
     switch_dict = {
         1: "nerubar-palace",
-        2: "",
+        2: "liberation-of-undermine",
         3: ""
     }
     raid = switch_dict.get(tier)
@@ -185,7 +185,7 @@ async def print_guild_ranks(interaction, tier, limit):
     season="1/2/3",
     limit="Number of guilds to display (or 'all' for full list)"
 )
-async def get_data(interaction, season: int = 1, limit: str = '10'):
+async def get_data(interaction, season: int = 2, limit: str = '10'):
     await print_guild_ranks(interaction, season, limit)
 
 # Command to print player ranks in the current M+ season

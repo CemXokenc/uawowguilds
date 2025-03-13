@@ -1,3 +1,4 @@
+
 realm=Tarren%20Mill&name=Нехай%20Щастить
 realm=Tarren%20Mill&name=Wrong%20Tactics%20Folks
 realm=Tarren%20Mill&name=Tauren%20Milfs
@@ -9,6 +10,7 @@ realm=Tarren%20Mill&name=Draenei%20Milfs
 realm=Tarren%20Mill&name=GBK
 realm=Tarren%20Mill&name=UA%20Cyborgs
 realm=Tarren%20Mill&name=Ryan%20Gosling
+realm=Tarren%20Mill&name=Order%20of%20the%20Trident
 realm=Howling%20Fjord&name=Нехай%20Щастить
 realm=Howling%20Fjord&name=Бавовна
 realm=Howling%20Fjord&name=Фортеця
