@@ -34,14 +34,14 @@ async def fetch_guild_data(guild_url, tier):
     raid = switch_dict.get(tier)
     
     current_bosses_names = {
-        1: "ulgrax-the-devourer",
-        2: "the-bloodbound-horror",
-        3: "sikran",
-        4: "rashanan",
-        5: "broodtwister-ovinax",
-        6: "nexus-princess-kyveza",
-        7: "the-silken-court",
-        8: "queen-ansurek"
+        1: "vexie-and-the-geargrinders",
+        2: "cauldron-of-carnage",
+        3: "rik-reverb",
+        4: "stix-bunkjunker",
+        5: "sprocketmonger-lockenstock",
+        6: "onearmed-bandit",
+        7: "mugzee-heads-of-security",
+        8: "chrome-king-gallywix"
     }
     
     boss_kill_url_suffix = {
@@ -213,9 +213,18 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
 
         # Check for valid guild
         if guilds.lower() != "all":
-            input_guilds = guilds.split(',')
-            if not any(any(member['guild'].lower() == guild.lower() for member in members_data) for guild in input_guilds):
-                await interaction.followup.send(f"At least one of the entered guilds does not exist. Check the spelling. Several guilds can be entered through ','.")
+            input_guilds = [g.strip().lower() for g in guilds.split(',')]
+            members_data = [
+                member for member in members_data
+                if (
+                    (member.get('guild') is None and 'none' in input_guilds) or
+                    ((member.get('guild') or "").lower() in input_guilds)
+                )
+            ]
+            if not members_data:
+                await interaction.followup.send(
+                    "No members found for the given guild(s). Check the spelling or try different values."
+                )
                 return
         
         # Check for valid class
@@ -243,7 +252,7 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
 
         # Check if top value is within the range of 1 to 50 inclusive
         if not 1 <= top <= 50:
-            await interaction.followup.send("Error: The value of top must be between 1 and 20 inclusive.")
+            await interaction.followup.send("Error: The value of top must be between 1 and 50 inclusive.")
             return
             
         # Check if rio value is within the range of 0 to 3500 inclusive
@@ -251,10 +260,6 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             await interaction.followup.send("Error: The value of rio must be between 0 and 3500 inclusive.")
             return
 
-        # Filter by guilds
-        if guilds.lower() != "all":
-            members_data = [member for member in members_data if any(guild.strip().lower() == member['guild'].lower() for guild in input_guilds)]
-            
         # Filter by class
         if classes.lower() != "all":
             members_data = [member for member in members_data if member['class'].lower() == classes.lower()]
@@ -280,7 +285,7 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
         # Limit the number of displayed results
         members_data = members_data[:top]
 
-        # Format header message                
+        # Format header message
         header_message = f"Top {top} | Classes -> {classes} | Guilds -> {guilds} | Role -> {role} | Rio > {rio}"
 
         # Format and send the results

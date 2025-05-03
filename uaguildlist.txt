@@ -11,6 +11,7 @@ realm=Tarren%20Mill&name=GBK
 realm=Tarren%20Mill&name=UA%20Cyborgs
 realm=Tarren%20Mill&name=Ryan%20Gosling
 realm=Tarren%20Mill&name=Order%20of%20the%20Trident
+realm=Tarren%20Mill&name=EtherealsUA
 realm=Howling%20Fjord&name=Нехай%20Щастить
 realm=Howling%20Fjord&name=Бавовна
 realm=Howling%20Fjord&name=Фортеця
