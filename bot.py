@@ -239,8 +239,8 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             else:
                 await interaction.followup.send("Wrong class format. Use the valid format: death knight:3 or warrior:1.")
                 return
-        else:
-            if classes.lower() not in valid_classes:
+        else:            
+            if (classes or "").lower() not in valid_classes:
                 await interaction.followup.send(f"Class '{classes}' does not exist. Use the valid classes: all, death knight, demon hunter, druid, evoker, hunter, mage, monk, paladin, priest, rogue, shaman, warlock, warrior.")
                 return        
 
@@ -260,9 +260,9 @@ async def rank(interaction, top: int = 10, classes: str = "all", guilds: str = "
             await interaction.followup.send("Error: The value of rio must be between 0 and 3500 inclusive.")
             return
 
-        # Filter by class
-        if classes.lower() != "all":
-            members_data = [member for member in members_data if member['class'].lower() == classes.lower()]
+        # Filter by class        
+        if (classes or "").lower() != "all":
+            members_data = [member for member in members_data if (member.get('class') or "").lower() == classes.lower()]
 
         # Check whether the specification is entered
         if spec_number == 0:
