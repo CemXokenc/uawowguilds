@@ -402,11 +402,11 @@ async def help_command(interaction):
             "       -season: Season number (1, 2, or 3, default is 3).\n"
             
             "\n/rank - Get player ranks in the current M+ season.\n"            
-            "       -top: Number of top players to display (1-20, default is 10).\n"
+            "       -top: Number of top players to display (1-50, default is 10).\n"
             "       -guilds: Guilds to filter (all, guild names separated by ',').\n"
             "       -classes: Player classes to filter (all or specific class).\n"
-            "       -role: Player role to filter (all, dps, healer, tank, or spec name).\n"
-            "       -rio: Minimum RIO score to display (0-3500, default is 500).\n"
+            "       -role: Player role to filter (all, dps, healer, tank, or class:spec number).\n"
+            "       -rio: Minimum RIO score to display (0-3500, default is 2000).\n"
             
             "\n/tournament - Get top players in each category.\n"            
             "       -guild: Top players of which guild will be searched.\n"
