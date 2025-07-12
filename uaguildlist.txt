@@ -1,5 +1,5 @@
 
-realm=Tarren%20Mill&name=Нехай%20Щастить
+realm=Tarren Mill&name=Нехай Щастить
 realm=Tarren%20Mill&name=Wrong%20Tactics%20Folks
 realm=Tarren%20Mill&name=Tauren%20Milfs
 realm=Tarren%20Mill&name=Nomads%20TM
@@ -12,6 +12,7 @@ realm=Tarren%20Mill&name=UA%20Cyborgs
 realm=Tarren%20Mill&name=Ryan%20Gosling
 realm=Tarren%20Mill&name=Order%20of%20the%20Trident
 realm=Tarren%20Mill&name=EtherealsUA
+realm=Tarren%20Mill&name=True%20Men%20Love
 realm=Howling%20Fjord&name=Нехай%20Щастить
 realm=Howling%20Fjord&name=Бавовна
 realm=Howling%20Fjord&name=Фортеця
@@ -36,6 +37,7 @@ realm=Silvermoon&name=SNÁFU
 realm=Silvermoon&name=BBC%20team
 realm=Silvermoon&name=iSHO
 realm=Silvermoon&name=Dark%20Green
+realm=Silvermoon&name=Wild%20Field
 realm=Kazzak&name=Borsch%20Battalion
 realm=Kazzak&name=Hwg
 realm=Kazzak&name=UKRAINIAN%20GUILD
