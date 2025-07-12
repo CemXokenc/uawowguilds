@@ -1,58 +1,59 @@
 
 realm=Tarren Mill&name=Нехай Щастить
-realm=Tarren%20Mill&name=Wrong%20Tactics%20Folks
-realm=Tarren%20Mill&name=Tauren%20Milfs
-realm=Tarren%20Mill&name=Nomads%20TM
-realm=Tarren%20Mill&name=The%20Toxic%20Avengers
-realm=Tarren%20Mill&name=Mayhem%20Soul
-realm=Tarren%20Mill&name=Millennial%20Union
-realm=Tarren%20Mill&name=Draenei%20Milfs
-realm=Tarren%20Mill&name=GBK
-realm=Tarren%20Mill&name=UA%20Cyborgs
-realm=Tarren%20Mill&name=Ryan%20Gosling
-realm=Tarren%20Mill&name=Order%20of%20the%20Trident
-realm=Tarren%20Mill&name=EtherealsUA
-realm=Tarren%20Mill&name=True%20Men%20Love
-realm=Howling%20Fjord&name=Нехай%20Щастить
-realm=Howling%20Fjord&name=Бавовна
-realm=Howling%20Fjord&name=Фортеця
-realm=Howling%20Fjord&name=Чёрный%20заслон
-realm=Howling%20Fjord&name=Дякую%20за%20РТ
-realm=Howling%20Fjord&name=Багряна%20Вежа
-realm=Terokkar&name=Ukrainian%20Alliance
+realm=Tarren Mill&name=Wrong Tactics Folks
+realm=Tarren Mill&name=Tauren Milfs
+realm=Tarren Mill&name=Nomads TM
+realm=Tarren Mill&name=The Toxic Avengers
+realm=Tarren Mill&name=Mayhem Soul
+realm=Tarren Mill&name=Millennial Union
+realm=Tarren Mill&name=Draenei Milfs
+realm=Tarren Mill&name=GBK
+realm=Tarren Mill&name=UA Cyborgs
+realm=Tarren Mill&name=Ryan Gosling
+realm=Tarren Mill&name=Order of the Trident
+realm=Tarren Mill&name=EtherealsUA
+realm=Tarren Mill&name=True Men Love
+realm=Howling Fjord&name=Нехай Щастить
+realm=Howling Fjord&name=Бавовна
+realm=Howling Fjord&name=Фортеця
+realm=Howling Fjord&name=Чёрный заслон
+realm=Howling Fjord&name=Дякую за РТ
+realm=Howling Fjord&name=Багряна Вежа
+realm=Terokkar&name=Ukrainian Alliance
 realm=Terokkar&name=Arey
-realm=Terokkar&name=Knaipa%20Variativ
+realm=Terokkar&name=Knaipa Variativ
 realm=Terokkar&name=Komora
 realm=Terokkar&name=Khorugva
+realm=Terokkar&name=Glory to Heroes
 realm=Silvermoon&name=Mythologeme
 realm=Silvermoon&name=Alphalogeme
 realm=Silvermoon&name=MRIYA
 realm=Silvermoon&name=MOVA
-realm=Silvermoon&name=BAPTA%20KOTIB
+realm=Silvermoon&name=BAPTA KOTIB
 realm=Silvermoon&name=Synevyr
 realm=Silvermoon&name=Ukraine
 realm=Silvermoon&name=Bcecbit
-realm=Silvermoon&name=Pray%20for%20Ukraine
+realm=Silvermoon&name=Pray for Ukraine
 realm=Silvermoon&name=SNÁFU
-realm=Silvermoon&name=BBC%20team
+realm=Silvermoon&name=BBC team
 realm=Silvermoon&name=iSHO
-realm=Silvermoon&name=Dark%20Green
-realm=Silvermoon&name=Wild%20Field
-realm=Kazzak&name=Borsch%20Battalion
+realm=Silvermoon&name=Dark Green
+realm=Silvermoon&name=Wild Field
+realm=Kazzak&name=Borsch Battalion
 realm=Kazzak&name=Hwg
-realm=Kazzak&name=UKRAINIAN%20GUILD
-realm=Ravencrest&name=Viysko%20NightElfiyske
+realm=Kazzak&name=UKRAINIAN GUILD
+realm=Ravencrest&name=Viysko NightElfiyske
 realm=Ravencrest&name=Ababagalamaga
-realm=Ravencrest&name=Tovarystvo%20Zolotyy%20Husak
-realm=Ravencrest&name=Unite%20for%20Ukraine
-realm=Twisting%20Nether&name=Morok
+realm=Ravencrest&name=Tovarystvo Zolotyy Husak
+realm=Ravencrest&name=Unite for Ukraine
+realm=Twisting Nether&name=Morok
 realm=Draenor&name=FavouriteWorstNightmare
-realm=Draenor&name=Ukrainian%20Cossacks
-realm=Draenor&name=Precedent%20UA
-realm=Gordunni&name=Героям%20слава
+realm=Draenor&name=Ukrainian Cossacks
+realm=Draenor&name=Precedent UA
+realm=Gordunni&name=Героям слава
 realm=Gordunni&name=Гуляйполе
 realm=Gordunni&name=Квента
 realm=Gordunni&name=Эйситерия
 realm=Eversong&name=Харцизи
-realm=Eversong&name=Мы%20с%20Украины
-realm=Soulflayer&name=Поляна%20Квасова
+realm=Eversong&name=Мы с Украины
+realm=Soulflayer&name=Поляна Квасова
