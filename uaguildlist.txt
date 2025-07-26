@@ -13,6 +13,8 @@ realm=Tarren Mill&name=Ryan Gosling
 realm=Tarren Mill&name=Order of the Trident
 realm=Tarren Mill&name=EtherealsUA
 realm=Tarren Mill&name=True Men Love
+realm=Tarren Mill&name=Thorned Horde
+realm=Tarren Mill&name=NBU
 realm=Howling Fjord&name=Нехай Щастить
 realm=Howling Fjord&name=Бавовна
 realm=Howling Fjord&name=Фортеця
@@ -25,6 +27,7 @@ realm=Terokkar&name=Knaipa Variativ
 realm=Terokkar&name=Komora
 realm=Terokkar&name=Khorugva
 realm=Terokkar&name=Glory to Heroes
+realm=Terokkar&name=Neutral Chaotic
 realm=Silvermoon&name=Mythologeme
 realm=Silvermoon&name=Alphalogeme
 realm=Silvermoon&name=MRIYA
