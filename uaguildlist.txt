@@ -15,6 +15,7 @@ realm=Tarren Mill&name=EtherealsUA
 realm=Tarren Mill&name=True Men Love
 realm=Tarren Mill&name=Thorned Horde
 realm=Tarren Mill&name=NBU
+realm=Tarren Mill&name=Potujnovodsk
 realm=Howling Fjord&name=Нехай Щастить
 realm=Howling Fjord&name=Бавовна
 realm=Howling Fjord&name=Фортеця
