@@ -29,19 +29,19 @@ async def fetch_guild_data(guild_url, tier):
     switch_dict = {
         1: "nerubar-palace",
         2: "liberation-of-undermine",
-        3: ""
+        3: "manaforge-omega"
     }
     raid = switch_dict.get(tier)
     
     current_bosses_names = {
-        1: "vexie-and-the-geargrinders",
-        2: "cauldron-of-carnage",
-        3: "rik-reverb",
-        4: "stix-bunkjunker",
-        5: "sprocketmonger-lockenstock",
-        6: "onearmed-bandit",
-        7: "mugzee-heads-of-security",
-        8: "chrome-king-gallywix"
+        1: "plexus-sentinel",
+        2: "loomithar",
+        3: "soulbinder-naazindhri",
+        4: "forgeweaver-araz",
+        5: "the-soul-hunters",
+        6: "fractillus",
+        7: "nexus-king-salhadaar",
+        8: "dimensius"
     }
     
     boss_kill_url_suffix = {
@@ -185,7 +185,7 @@ async def print_guild_ranks(interaction, tier, limit):
     season="1/2/3",
     limit="Number of guilds to display (or 'all' for full list)"
 )
-async def get_data(interaction, season: int = 2, limit: str = '10'):
+async def get_data(interaction, season: int = 3, limit: str = '10'):
     await print_guild_ranks(interaction, season, limit)
 
 # Command to print player ranks in the current M+ season
