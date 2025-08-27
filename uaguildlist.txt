@@ -16,6 +16,9 @@ realm=Tarren Mill&name=True Men Love
 realm=Tarren Mill&name=Thorned Horde
 realm=Tarren Mill&name=NBU
 realm=Tarren Mill&name=Potujnovodsk
+realm=Tarren Mill&name=Pretty Girls Club
+realm=Tarren Mill&name=WHITEHOST
+realm=Tarren Mill&name=KBAC TAPAC
 realm=Howling Fjord&name=Нехай Щастить
 realm=Howling Fjord&name=Бавовна
 realm=Howling Fjord&name=Фортеця
@@ -29,6 +32,9 @@ realm=Terokkar&name=Komora
 realm=Terokkar&name=Khorugva
 realm=Terokkar&name=Glory to Heroes
 realm=Terokkar&name=Neutral Chaotic
+realm=Terokkar&name=Indomiti
+realm=Terokkar&name=Contra Spem Spero
+realm=Terokkar&name=Ukraina
 realm=Silvermoon&name=Mythologeme
 realm=Silvermoon&name=Alphalogeme
 realm=Silvermoon&name=MRIYA
@@ -43,14 +49,19 @@ realm=Silvermoon&name=BBC team
 realm=Silvermoon&name=iSHO
 realm=Silvermoon&name=Dark Green
 realm=Silvermoon&name=Wild Field
+realm=Silvermoon&name=Legacy of the Kaldorei
+realm=Silvermoon&name=NightRoutine
 realm=Kazzak&name=Borsch Battalion
 realm=Kazzak&name=Hwg
 realm=Kazzak&name=UKRAINIAN GUILD
+realm=Kazzak&name=Chomu b ni
 realm=Ravencrest&name=Viysko NightElfiyske
 realm=Ravencrest&name=Ababagalamaga
 realm=Ravencrest&name=Tovarystvo Zolotyy Husak
 realm=Ravencrest&name=Unite for Ukraine
+realm=Ravencrest&name=CBITAHOK KPOBI
 realm=Twisting Nether&name=Morok
+realm=Twisting Nether&name=Glory to Ukraine
 realm=Draenor&name=FavouriteWorstNightmare
 realm=Draenor&name=Ukrainian Cossacks
 realm=Draenor&name=Precedent UA
