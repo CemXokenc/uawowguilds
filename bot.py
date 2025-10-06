@@ -14,16 +14,16 @@ tree = app_commands.CommandTree(client)
 # Function to read guild data from the file
 def read_guild_data(file_path='uaguildlist.txt'):
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r', encoding='utf-8-sig') as file:
             lines = file.readlines()
-            return [line.strip() for line in lines]
+            return [line.strip() for line in lines if line.strip()]
     except Exception as e:
         print(f"An error occurred while reading guild data: {e}")
         return []
 
 # Asynchronous function to fetch guild data
 async def fetch_guild_data(guild_url, tier):
-    prefix = "http://raider.io/api/v1/guilds/profile?region=eu&"
+    prefix = "http://raider.io/api/v1/guilds/profile?"
     postfix = "&fields=raid_rankings,raid_progression"
     
     switch_dict = {
@@ -35,19 +35,19 @@ async def fetch_guild_data(guild_url, tier):
     
     current_bosses_names = {
         1: "plexus-sentinel",
-        2: "loomithar",
-        3: "soulbinder-naazindhri",
+        2: "soulbinder-naazindhri",
+        3: "loomithar",
         4: "forgeweaver-araz",
-        5: "the-soul-hunters",
-        6: "fractillus",
+        5: "fractillus",
+        6: "the-soul-hunters",
         7: "nexus-king-salhadaar",
         8: "dimensius"
     }
     
     boss_kill_url_suffix = {
-        "M": "&difficulty=mythic&region=eu&",
-        "H": "&difficulty=heroic&region=eu&",
-        "N": "&difficulty=normal&region=eu&",
+        "M": "&difficulty=mythic",
+        "H": "&difficulty=heroic",
+        "N": "&difficulty=normal",
     }
 
     try:
@@ -74,14 +74,15 @@ async def fetch_guild_data(guild_url, tier):
                         if not next_boss:
                             raise ValueError("Invalid boss number")
                          
-                        realm, guild = guild_url.split("&")
+                        region, realm, guild = guild_url.split("&")
+                        formatted_region = region.replace("region=", "")
                         formatted_realm = realm.replace("%20", "-").replace("realm=", "")
                         formatted_guild = guild.replace("name=", "guild=")
                         
                         difficulty = guild_progress[-1]
                         boss_kill_url = (
                             f"https://raider.io/api/guilds/boss-kills?raid={raid}"
-                            f"{boss_kill_url_suffix.get(difficulty, '')}realm={formatted_realm}&{formatted_guild}&boss={next_boss}"
+                            f"{boss_kill_url_suffix.get(difficulty, '')}&region={formatted_region}&realm={formatted_realm}&{formatted_guild}&boss={next_boss}"
                         )
                         
                         async with session.get(boss_kill_url, ssl=False) as boss_response:
@@ -93,7 +94,7 @@ async def fetch_guild_data(guild_url, tier):
                 except Exception as e:
                     print(f"Error processing guild progress for {guild_name}: {e}")
                 
-                return {
+                return {                    
                     "name": guild_name,
                     "realm": guild_realm,
                     "progress": guild_progress,

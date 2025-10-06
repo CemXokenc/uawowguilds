@@ -1,74 +1,62 @@
-
-realm=Tarren Mill&name=Нехай Щастить
-realm=Tarren Mill&name=Wrong Tactics Folks
-realm=Tarren Mill&name=Tauren Milfs
-realm=Tarren Mill&name=Nomads TM
-realm=Tarren Mill&name=The Toxic Avengers
-realm=Tarren Mill&name=Mayhem Soul
-realm=Tarren Mill&name=Millennial Union
-realm=Tarren Mill&name=Draenei Milfs
-realm=Tarren Mill&name=GBK
-realm=Tarren Mill&name=UA Cyborgs
-realm=Tarren Mill&name=Ryan Gosling
-realm=Tarren Mill&name=Order of the Trident
-realm=Tarren Mill&name=EtherealsUA
-realm=Tarren Mill&name=True Men Love
-realm=Tarren Mill&name=Thorned Horde
-realm=Tarren Mill&name=NBU
-realm=Tarren Mill&name=Potujnovodsk
-realm=Tarren Mill&name=Pretty Girls Club
-realm=Tarren Mill&name=WHITEHOST
-realm=Tarren Mill&name=KBAC TAPAC
-realm=Howling Fjord&name=Нехай Щастить
-realm=Howling Fjord&name=Бавовна
-realm=Howling Fjord&name=Фортеця
-realm=Howling Fjord&name=Чёрный заслон
-realm=Howling Fjord&name=Дякую за РТ
-realm=Howling Fjord&name=Багряна Вежа
-realm=Terokkar&name=Ukrainian Alliance
-realm=Terokkar&name=Arey
-realm=Terokkar&name=Knaipa Variativ
-realm=Terokkar&name=Komora
-realm=Terokkar&name=Khorugva
-realm=Terokkar&name=Glory to Heroes
-realm=Terokkar&name=Neutral Chaotic
-realm=Terokkar&name=Indomiti
-realm=Terokkar&name=Contra Spem Spero
-realm=Terokkar&name=Ukraina
-realm=Silvermoon&name=Mythologeme
-realm=Silvermoon&name=Alphalogeme
-realm=Silvermoon&name=MRIYA
-realm=Silvermoon&name=MOVA
-realm=Silvermoon&name=BAPTA KOTIB
-realm=Silvermoon&name=Synevyr
-realm=Silvermoon&name=Ukraine
-realm=Silvermoon&name=Bcecbit
-realm=Silvermoon&name=Pray for Ukraine
-realm=Silvermoon&name=SNÁFU
-realm=Silvermoon&name=BBC team
-realm=Silvermoon&name=iSHO
-realm=Silvermoon&name=Dark Green
-realm=Silvermoon&name=Wild Field
-realm=Silvermoon&name=Legacy of the Kaldorei
-realm=Silvermoon&name=NightRoutine
-realm=Kazzak&name=Borsch Battalion
-realm=Kazzak&name=Hwg
-realm=Kazzak&name=UKRAINIAN GUILD
-realm=Kazzak&name=Chomu b ni
-realm=Ravencrest&name=Viysko NightElfiyske
-realm=Ravencrest&name=Ababagalamaga
-realm=Ravencrest&name=Tovarystvo Zolotyy Husak
-realm=Ravencrest&name=Unite for Ukraine
-realm=Ravencrest&name=CBITAHOK KPOBI
-realm=Twisting Nether&name=Morok
-realm=Twisting Nether&name=Glory to Ukraine
-realm=Draenor&name=FavouriteWorstNightmare
-realm=Draenor&name=Ukrainian Cossacks
-realm=Draenor&name=Precedent UA
-realm=Gordunni&name=Героям слава
-realm=Gordunni&name=Гуляйполе
-realm=Gordunni&name=Квента
-realm=Gordunni&name=Эйситерия
-realm=Eversong&name=Харцизи
-realm=Eversong&name=Мы с Украины
-realm=Soulflayer&name=Поляна Квасова
+region=eu&realm=Tarren Mill&name=Нехай Щастить
+region=eu&realm=Tarren Mill&name=Wrong Tactics Folks
+region=eu&realm=Tarren Mill&name=Tauren Milfs
+region=eu&realm=Tarren Mill&name=Nomads TM
+region=eu&realm=Tarren Mill&name=The Toxic Avengers
+region=eu&realm=Tarren Mill&name=Mayhem Soul
+region=eu&realm=Tarren Mill&name=Millennial Union
+region=eu&realm=Tarren Mill&name=Draenei Milfs
+region=eu&realm=Tarren Mill&name=GBK
+region=eu&realm=Tarren Mill&name=UA Cyborgs
+region=eu&realm=Tarren Mill&name=Ryan Gosling
+region=eu&realm=Tarren Mill&name=Order of the Trident
+region=eu&realm=Tarren Mill&name=EtherealsUA
+region=eu&realm=Tarren Mill&name=True Men Love
+region=eu&realm=Tarren Mill&name=Thorned Horde
+region=eu&realm=Tarren Mill&name=NBU
+region=eu&realm=Howling Fjord&name=Нехай Щастить
+region=eu&realm=Howling Fjord&name=Бавовна
+region=eu&realm=Howling Fjord&name=Фортеця
+region=eu&realm=Howling Fjord&name=Чёрный заслон
+region=eu&realm=Howling Fjord&name=Дякую за РТ
+region=eu&realm=Howling Fjord&name=Багряна Вежа
+region=eu&realm=Terokkar&name=Ukrainian Alliance
+region=eu&realm=Terokkar&name=Arey
+region=eu&realm=Terokkar&name=Knaipa Variativ
+region=eu&realm=Terokkar&name=Komora
+region=eu&realm=Terokkar&name=Khorugva
+region=eu&realm=Terokkar&name=Glory to Heroes
+region=eu&realm=Terokkar&name=Neutral Chaotic
+region=eu&realm=Silvermoon&name=Mythologeme
+region=eu&realm=Silvermoon&name=Alphalogeme
+region=eu&realm=Silvermoon&name=MRIYA
+region=eu&realm=Silvermoon&name=MOVA
+region=eu&realm=Silvermoon&name=BAPTA KOTIB
+region=eu&realm=Silvermoon&name=Synevyr
+region=eu&realm=Silvermoon&name=Ukraine
+region=eu&realm=Silvermoon&name=Bcecbit
+region=eu&realm=Silvermoon&name=Pray for Ukraine
+region=eu&realm=Silvermoon&name=SNÁFU
+region=eu&realm=Silvermoon&name=BBC team
+region=eu&realm=Silvermoon&name=iSHO
+region=eu&realm=Silvermoon&name=Dark Green
+region=eu&realm=Silvermoon&name=Wild Field
+region=eu&realm=Kazzak&name=Borsch Battalion
+region=eu&realm=Kazzak&name=Hwg
+region=eu&realm=Kazzak&name=UKRAINIAN GUILD
+region=eu&realm=Ravencrest&name=Viysko NightElfiyske
+region=eu&realm=Ravencrest&name=Ababagalamaga
+region=eu&realm=Ravencrest&name=Tovarystvo Zolotyy Husak
+region=eu&realm=Ravencrest&name=Unite for Ukraine
+region=eu&realm=Twisting Nether&name=Morok
+region=eu&realm=Draenor&name=FavouriteWorstNightmare
+region=eu&realm=Draenor&name=Ukrainian Cossacks
+region=eu&realm=Draenor&name=Precedent UA
+region=eu&realm=Gordunni&name=Героям слава
+region=eu&realm=Gordunni&name=Гуляйполе
+region=eu&realm=Gordunni&name=Квента
+region=eu&realm=Gordunni&name=Эйситерия
+region=eu&realm=Eversong&name=Харцизи
+region=eu&realm=Eversong&name=Мы с Украины
+region=eu&realm=Soulflayer&name=Поляна Квасова
+region=us&realm=Illidan&name=MOTAHKA
