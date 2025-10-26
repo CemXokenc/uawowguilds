@@ -14,6 +14,13 @@ region=eu&realm=Tarren Mill&name=EtherealsUA
 region=eu&realm=Tarren Mill&name=True Men Love
 region=eu&realm=Tarren Mill&name=Thorned Horde
 region=eu&realm=Tarren Mill&name=NBU
+region=eu&realm=Tarren Mill&name=Potujnovodsk
+region=eu&realm=Tarren Mill&name=Pretty Girls Club
+region=eu&realm=Tarren Mill&name=WHITEHOST
+region=eu&realm=Tarren Mill&name=KBAC TAPAC
+region=eu&realm=Tarren Mill&name=QuadHorders
+region=eu&realm=Tarren Mill&name=Sich Happens Legion
+region=eu&realm=Hellscream&name=Grim
 region=eu&realm=Howling Fjord&name=Нехай Щастить
 region=eu&realm=Howling Fjord&name=Бавовна
 region=eu&realm=Howling Fjord&name=Фортеця
@@ -27,6 +34,9 @@ region=eu&realm=Terokkar&name=Komora
 region=eu&realm=Terokkar&name=Khorugva
 region=eu&realm=Terokkar&name=Glory to Heroes
 region=eu&realm=Terokkar&name=Neutral Chaotic
+region=eu&realm=Terokkar&name=Indomiti
+region=eu&realm=Terokkar&name=Contra Spem Spero
+region=eu&realm=Terokkar&name=Ukraina
 region=eu&realm=Silvermoon&name=Mythologeme
 region=eu&realm=Silvermoon&name=Alphalogeme
 region=eu&realm=Silvermoon&name=MRIYA
@@ -41,14 +51,22 @@ region=eu&realm=Silvermoon&name=BBC team
 region=eu&realm=Silvermoon&name=iSHO
 region=eu&realm=Silvermoon&name=Dark Green
 region=eu&realm=Silvermoon&name=Wild Field
+region=eu&realm=Silvermoon&name=Legacy of the Kaldorei
+region=eu&realm=Silvermoon&name=NightRoutine
+region=eu&realm=Silvermoon&name=BURSHTYN
+region=eu&realm=Silvermoon&name=Knights of Elune
 region=eu&realm=Kazzak&name=Borsch Battalion
 region=eu&realm=Kazzak&name=Hwg
 region=eu&realm=Kazzak&name=UKRAINIAN GUILD
+region=eu&realm=Kazzak&name=Chomu b ni
 region=eu&realm=Ravencrest&name=Viysko NightElfiyske
 region=eu&realm=Ravencrest&name=Ababagalamaga
 region=eu&realm=Ravencrest&name=Tovarystvo Zolotyy Husak
 region=eu&realm=Ravencrest&name=Unite for Ukraine
+region=eu&realm=Ravencrest&name=CBITAHOK KPOBI
 region=eu&realm=Twisting Nether&name=Morok
+region=eu&realm=Twisting Nether&name=Glory to Ukraine
+region=eu&realm=Twisting Nether&name=Enter Game Mode
 region=eu&realm=Draenor&name=FavouriteWorstNightmare
 region=eu&realm=Draenor&name=Ukrainian Cossacks
 region=eu&realm=Draenor&name=Precedent UA
